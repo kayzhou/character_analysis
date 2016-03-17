@@ -1,0 +1,5 @@
+data/
+features_doc/
+*.pyc
+.idea/
+test.py
