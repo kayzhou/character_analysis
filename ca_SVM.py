@@ -6,6 +6,7 @@ from sklearn.datasets import load_svmlight_file
 from sklearn.cross_validation import cross_val_score
 from sklearn.externals import joblib
 from sklearn.metrics import f1_score
+import numpy as np
 
 '''
 grid 最优参数
@@ -52,6 +53,9 @@ grid 最优参数
 2.0 3.0517578125e-05 54.9738
 0.5 0.00048828125 63.6364
 128.0 3.0517578125e-05 59.4118
+
+32.0 0.0078125 61.4583
+2.0 0.001953125 60.3896
 '''
 
 
@@ -65,13 +69,23 @@ def ca_svm(in_name, out_model_name, C, gamma):
     print('10次10折交叉检验 =', cvs / 10)
     y_hat = clf.predict(X)
     # print('预测结果 =', y_hat); print('实际结果 =', y)
-    # joblib.dump(clf, out_model_name)
+    joblib.dump(clf, out_model_name)
     print('训练数据上的表现 =', clf.score(X, y))
     try:
         print('F1 score =', f1_score(y, y_hat))
         pass
     except:
         pass
+
+
+def svm_predict(in_name, model):
+    clf = joblib.load(model)
+    for line in open(in_name):
+        X = np.array([[float(x) for x in line.strip()[11:].split(' ')]])
+        X.reshape(-1, 1)
+        # print(X)
+        y = clf.predict(X)
+        print(y)
 
 
 if __name__ == '__main__':
@@ -108,9 +122,7 @@ if __name__ == '__main__':
     # ca_svm('data/SVM/311_static_3_class_side.txt', 'model/svm_311_static_3.mod', 2.0, 0.0001220703125)
     # ca_svm('data/SVM/311_static_4_class_side.txt', 'model/svm_311_static_4.mod', 8.0, 3.0517578125e-05)
 
+    # ca_svm('data/SVM/315_features_1_sides.txt', 'model/315_features_1_sides.mod', 32.0, 0.0078125)
+    # ca_svm('data/SVM/315_features_3_sides.txt', 'model/315_features_3_sides.mod', 2.0, 0.001953125)
 
-    ca_svm('data/SVM/315_features_0_sides.txt', 'model/svm_311_static_0.mod', 0.03125, 0.0001220703125)
-    ca_svm('data/SVM/315_features_1_sides.txt', 'model/svm_311_static_1.mod', 128.0, 0.0001220703125)
-    ca_svm('data/SVM/315_features_2_sides.txt', 'model/svm_311_static_2.mod', 2.0, 3.0517578125e-05)
-    ca_svm('data/SVM/315_features_3_sides.txt', 'model/svm_311_static_3.mod', 0.5, 0.00048828125 )
-    ca_svm('data/SVM/315_features_4_sides.txt', 'model/svm_311_static_4.mod', 128.0, 3.0517578125e-05)
+    svm_predict('data/features/features_0321_test.txt', 'model/315_features_0_sides.mod')

@@ -194,7 +194,6 @@ def vectorizer_dir(in_dir, out_name, voc_name):
             # print(os.path.join(in_dir, file_name).read())
             corpus.append(open(os.path.join(in_dir, file_name), encoding='utf8').read())
 
-
     vector = CountVectorizer(vocabulary=read_keyword_set())
     re = vector.fit_transform(corpus).toarray()
     out_file = open(out_name, 'w')
@@ -207,4 +206,4 @@ if __name__ == '__main__':
     # print(seg_word(filter('//转发微博.')))
     # tf_idf('data/text_one_line', 'data/tfidf_scale')
     # count_words_voc('data/text_data.txt', 'keyword.txt')
-    vectorizer_dir('data/text_one_line', 'data/word_appear_scale.txt', 'data/keyword.txt')
+    vectorizer_dir('data/text_one_line', 'data/word_appear_scale_test.txt', 'data/word_list/keyword.txt')
