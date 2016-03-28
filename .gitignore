@@ -1,4 +1,5 @@
 data/
+model/
 features_doc/
 *.pyc
 .idea/

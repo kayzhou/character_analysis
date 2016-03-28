@@ -6,10 +6,12 @@ import os
 import numpy as np
 import datetime
 import codecs
-from NLP_tool import seg_word, filter, tf_idf
+# from NLP_tool import seg_word, filter, tf_idf
 from sklearn.datasets import load_svmlight_file
 from sklearn.datasets import dump_svmlight_file
 from math import log
+import re
+import pandas as pd
 
 
 # 提取微博用户特征, 用于用户性格分析
@@ -166,16 +168,8 @@ def load_user_data(in_name):
     return user_data
 
 
-def extract_static_features(in_name='data/static_user_data.txt', out_name='data/features/static_feature.txt'):
-    '''
-    抽出用户静态特征
-    :param in_name:
-    :param out_name:
-    :return:
-    '''
-    out_file = open(out_name, 'w')
-    for line in open(in_name):
-        def b2i(bo):
+def line_static_features(line, last_dt):
+    def b2i(bo):
             '''
             boolean类型转成可识别的int
             :param bo:
@@ -183,47 +177,107 @@ def extract_static_features(in_name='data/static_user_data.txt', out_name='data/
             '''
             return str(int(bo))
 
-        x = []
-        raw_data = json.loads(line.strip())
-        x.append(raw_data['id'])
+    x = []
+    raw_data = json.loads(line.strip())['user']
+    x.append(raw_data['id'])
 
-        # 性别
-        if raw_data['gender'] == 'm':
-            x.append('1')
-        else:
-            x.append('0')
+    # 性别
+    if raw_data['gender'] == 'm':
+        x.append('1')
+    else:
+        x.append('0')
 
-        # 从注册到2016年3月2日的天数
-        res = (datetime.datetime(2016, 3, 2)-str2datetime(raw_data['created_at'])).days
-        x.append(log(res))
-        # log (微博数 + 1)
-        x.append(log(float(raw_data['statuses_count']) + 1))
-        # log (微博数 / 注册天数)
-        x.append(float(raw_data['statuses_count']) / res)
-        # log (关注数 + 1)
-        x.append(log(float(raw_data['friends_count']) + 1))
-        # log (粉丝数 + 1)
-        x.append(log(float(raw_data['followers_count']) + 1))
-        # 微博数 / (关注数 + 1)
-        x.append(float(raw_data['statuses_count']) / (float(raw_data['friends_count']) + 1))
-        # 微博数 / (粉丝数 + 1)
-        x.append(float(raw_data['followers_count']) / (float(raw_data['friends_count']) + 1))
+    # 从注册到最后一条微博的天数: 注册天数
+    reg_dt = str2datetime(raw_data['created_at'])
+    res = (last_dt - reg_dt).days + 1
+    # print("最后一条微博发布时间:", last_dt)
+    # print("注册时间:", reg_dt)
+    if res < 0: res = 1 # 异常情况
+    x.append(log(res + 1))
+    # log (微博数 + 1)
+    x.append(log(float(raw_data['statuses_count']) + 1))
+    # log (微博数 / 注册天数)
+    x.append(float(raw_data['statuses_count']) / res)
+    # log (关注数 + 1)
+    x.append(log(float(raw_data['friends_count']) + 1))
+    # log (粉丝数 + 1)
+    x.append(log(float(raw_data['followers_count']) + 1))
+    # 微博数 / (关注数 + 1)
+    x.append(float(raw_data['statuses_count']) / (float(raw_data['friends_count']) + 1))
+    # 微博数 / (粉丝数 + 1)
+    x.append(float(raw_data['followers_count']) / (float(raw_data['friends_count']) + 1))
 
-        # 是否为认证用户
-        x.append(b2i(raw_data['verified']))
-        # 是否允许评论
-        x.append(b2i(raw_data['allow_all_comment']))
-        # 是否允许发送私信
-        x.append(b2i(raw_data['allow_all_act_msg']))
-        # 是否开启地理位置
-        x.append(b2i(raw_data['geo_enabled']))
-        # 个人描述的长度
-        x.append(len(raw_data['description']))
+    # 是否为认证用户
+    x.append(b2i(raw_data['verified']))
+    # 是否允许评论
+    x.append(b2i(raw_data['allow_all_comment']))
+    # 是否允许发送私信
+    x.append(b2i(raw_data['allow_all_act_msg']))
+    # 是否开启地理位置
+    x.append(b2i(raw_data['geo_enabled']))
+    # 个人描述的长度
+    x.append(len(raw_data['description']))
+    return x
 
-        out_file.write(' '.join([str(x) for x in x]) + '\n')
+
+def extract_static_features(in_dir='data/users_20160302', out_name='data/features/static_feature.txt'):
+    '''
+    抽出用户静态特征
+    :param in_name:
+    :param out_name:
+    :return:
+    '''
+    out_file = open(out_name, 'w')
+    for file_name in os.listdir(in_dir):
+        if os.path.isfile(os.path.join(in_dir, file_name)) and file_name in psy_test_data:
+            in_name = os.path.join(in_dir, file_name)
+            print(in_name)
+            last_dt = last_weibo(in_name)
+            line = open(in_name).readline().strip()
+            X = line_static_features(line, last_dt)
+            out_file.write(' '.join([str(x) for x in X]) + '\n')
 
 
-def extract_dynamic_features(in_dir='data/users_20160302', out_name='data/dynamic_feature.txt'):
+def last_weibo(in_name):
+    dts = exact_tweet_datetime(in_name)
+    last = dts[0]
+    for d in dts:
+        if d > last:
+            last = d
+    return last
+
+
+def file_dynamic_features(in_name):
+    # 获取微博发送的日期时间
+    dts = exact_tweet_datetime(in_name)
+    print(in_name, len(dts))
+    # 多少周发送微博, 多少天发送微博 (该周或天发送一条即可)
+    cnt_weeks, cnt_days = exact_how_many_weeks_days(dts)
+    # 提取时间序列的特征
+    X = exact_series_feature(exact_day_series(dts), cnt_weeks) \
+        + exact_series_feature(exact_week_series(dts), cnt_days)
+    # 为了过滤!
+    # return X
+    # 获取转发的日期时间
+    retweet_dts = exact_tweet_datetime(in_name, action='retweet')
+    X += (exact_series_feature(exact_day_series(retweet_dts), cnt_weeks) \
+        + exact_series_feature(exact_week_series(retweet_dts), cnt_days))
+
+    # 获取@的日期时间
+    at_dts = exact_tweet_datetime(in_name, action='at')
+    X += (exact_series_feature(exact_day_series(at_dts), cnt_weeks) \
+        + exact_series_feature(exact_week_series(at_dts), cnt_days))
+
+    # 转发比例
+    X.append(len(retweet_dts) / (len(dts) + 1))
+    # @比例
+    X.append(len(at_dts) / (len(dts) + 1))
+    # 微博平均长度
+    X.append(extract_tweet_ave_length(in_name))
+    return X
+
+
+def extract_dynamic_features(in_dir='data/users_20160302', out_name='data/features/dynamic_feature.txt'):
     '''
     提取动态特征
     :param in_dir:
@@ -233,16 +287,9 @@ def extract_dynamic_features(in_dir='data/users_20160302', out_name='data/dynami
     out_file = open(out_name, 'w')
     for file_name in os.listdir(in_dir):
         if os.path.isfile(os.path.join(in_dir, file_name)) and file_name in psy_test_data:
-            print(file_name)
-            # 获取微博发送的时间
-            dts = exact_tweet_datetime(os.path.join(in_dir, file_name))
-            # 多少周发送微博, 多少天发送微博 (该周或天发送一条即可)
-            cnt_weeks, cnt_days = exact_how_many_weeks_days(dts)
-            # 提取时间序列的特征
-            X = exact_series_feature(exact_day_series(dts), cnt_weeks) \
-                + exact_series_feature(exact_week_series(dts), cnt_days)
-
+            X = file_dynamic_features(os.path.join(in_dir, file_name))
             out_file.write(file_name + ' ' + ' '.join([str(x) for x in X]) + '\n')
+
     out_file.close()
 
 
@@ -340,10 +387,13 @@ def str2datetime(s):
     :param s:
     :return:
     '''
-    return datetime.datetime.strptime(s[:-11] + s[-5:], '%c')
+    if len(s) == 19:
+        return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
+    else:
+        return datetime.datetime.strptime(s[:-11] + s[-5:], '%c')
 
 
-def exact_tweet_datetime(in_name):
+def exact_tweet_datetime(in_name, action='tweet'):
     '''
     提取微博发布日期
     :param in_name:
@@ -351,7 +401,54 @@ def exact_tweet_datetime(in_name):
     :return:
     '''
     user_data = load_user_data(in_name)
-    return [str2datetime(user['created_at']) for user in user_data]
+    if action == 'tweet':
+        return [str2datetime(user['created_at']) for user in user_data]
+    elif action == 'retweet':
+        return [str2datetime(user['created_at']) for user in user_data if "retweeted_status" in user]
+    elif action == "at":
+        return [str2datetime(user['created_at']) for user in user_data
+                if "@" in user["text"][:user["text"].find("//")] or ("retweeted_status" not in user and "@" in user["text"])]
+
+
+def extract_tweet_ave_length(in_name):
+    '''
+    获取微博的长度
+    :param in_name:
+    :return:
+    '''
+    user_data = load_user_data(in_name)
+    tweet_length = []
+
+    def remove_retweet(tweet):
+        return tweet[:tweet.find("//")]
+    def remove_at(tweet):
+        del_at=r'@.*?:|@.*?\s|@.*?$'
+        tweet=re.sub(del_at,'',tweet)
+        return tweet
+    def remove_share(tweet):
+        tweet=re.sub(r'\(分享自.*?\)','',tweet)
+        return re.sub(r'（分享自.*?）','',tweet)
+    def remove_emoticon(tweet):
+        del_emo=r'\[.*?\]'
+        return re.sub(del_emo,'',tweet)
+    def remove_url(tweet):
+        url_pattern=r'http://t.cn/\w+'
+        tweet=re.sub(url_pattern,'',tweet)
+        return tweet
+    def filter(tweet):
+        return remove_url(remove_at(remove_share(remove_retweet(tweet))))
+
+    for user in user_data:
+        tweet_length.append(len(filter(user['text'])))
+
+    tweet_length = np.array(tweet_length)
+    # print(tweet_length.mean())
+    # print(tweet_length.max())
+    # print(tweet_length.argmax())
+    # print(tweet_length.min())
+    # print(tweet_length.__len__())
+
+    return tweet_length.mean()
 
 
 def exact_how_many_weeks_days(dts):
@@ -413,7 +510,13 @@ def exact_user_text(in_name):
     return [user['text'] for user in user_data]
 
 
-def union_feature_quality(in_name_feature, in_name_quality, out_name, target_index):
+def get_ignore_index():
+    data = pd.read_csv('data/data_amount.txt', delimiter=" ", header=None)
+    new_data = data[data[1]<100].any(1).index
+    return new_data
+
+
+def union_feature(in_name_feature, in_name_quality, out_name, target_index, ignore=True):
     '''
     将特征和目标合并
     :param in_name_feature: 特征文件
@@ -424,12 +527,16 @@ def union_feature_quality(in_name_feature, in_name_quality, out_name, target_ind
     feature_data = np.loadtxt(in_name_feature, dtype=float)
     quality_data = np.loadtxt(in_name_quality, dtype=int)
     out_file = open(out_name, 'w')
+    if ignore:
+        ignores = get_ignore_index()
 
     for i in range(len(feature_data)):
-        # y = quality_data[i][goal]
+
+        if ignore and i in ignores:
+            continue
+
         y = quality_data[i][target_index]
         x = feature_data[i][1:] # 不考虑uid
-        print(y, x)
 
         out_file.write(str(y) + ' ' + ' '.join([str(i + 1) + ':' + str(xi) for i, xi in enumerate(x)]) + '\n')
         # out_file.write(str(y) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
@@ -437,7 +544,7 @@ def union_feature_quality(in_name_feature, in_name_quality, out_name, target_ind
     # dump_svmlight_file(x, y, out_name)
 
 
-def union_feature_quality_tfidf(in_dir_feature, in_name_quality, out_name, target_index):
+def union_feature_tfidf(in_dir_feature, in_name_quality, out_name, target_index):
     '''
     将 tfidf值 和 目标 合并
     :param in_name_feature:
@@ -460,7 +567,7 @@ def union_feature_quality_tfidf(in_dir_feature, in_name_quality, out_name, targe
         i += 1
 
 
-def union_feature_quality_sides(in_name_feature, in_name_quality, out_name, target_index):
+def union_feature_sides(in_name_feature, in_name_quality, out_name, target_index, ignore=True):
     '''
     将特征和目标合并
     :param in_name_feature: 特征文件
@@ -472,12 +579,17 @@ def union_feature_quality_sides(in_name_feature, in_name_quality, out_name, targ
     quality_data = np.loadtxt(in_name_quality, dtype=int)
     out_file = open(out_name, 'w')
 
+    if ignore:
+        ignores = get_ignore_index()
+
     for i in range(len(feature_data)):
+
+        if ignore and i in ignores:
+            continue
         # y = quality_data[i][goal]
         y = quality_data[i][target_index]
         if y == 0: continue
         x = feature_data[i][1:] # 不考虑uid
-        print(y, x)
 
         out_file.write(str(y) + ' ' + ' '.join([str(i + 1) + ':' + str(xi) for i, xi in enumerate(x)]) + '\n')
         # out_file.write(str(y) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
@@ -518,39 +630,54 @@ if __name__ == '__main__':
     #     save_related_words(os.path.join('data/users_20160302', uid), 'data/related_weibo')
 
     # 静态特征
-    extract_static_features()
+    # extract_static_features()
 
     # 动态特征
-    extract_dynamic_features()
+    # extract_dynamic_features()
 
     #  整合三种特征
-    sf = open('data/features/static_feature.txt').readlines()
-    df = open('data/features/dynamic_feature.txt').readlines()
-    tf = open('data/features/word_appear_scale.txt').readlines()
-    f = open('data/features/315_features.txt', 'w')
-    for i in range(len(sf)):
-        f.write(sf[i].strip() + ' ' + df[i][11:].strip() + ' ' + tf[i])
-    f.close()
+    # sf = open('data/features/static_feature.txt').readlines()
+    # df = open('data/features/dynamic_feature.txt').readlines()
+    # tf = open('data/features/word_appear_scale.txt').readlines()
+    # f = open('data/features/328_features.txt', 'w')
+    # for i in range(len(sf)):
+    #     f.write(sf[i].strip() + ' ' + df[i][11:].strip() + ' ' + tf[i])
+    # f.close()
 
     # 将特征和目标结合
-    union_feature_quality('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/321_features_0.txt', 0)
-    union_feature_quality('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/321_features_1.txt', 1)
-    union_feature_quality('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/321_features_2.txt', 2)
-    union_feature_quality('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/321_features_3.txt', 3)
-    union_feature_quality('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/321_features_4.txt', 4)
+    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_0.txt', 0)
+    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_1.txt', 1)
+    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_2.txt', 2)
+    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_3.txt', 3)
+    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_4.txt', 4)
+    #
+    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_0.txt', 0)
+    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_1.txt', 1)
+    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_2.txt', 2)
+    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_3.txt', 3)
+    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_4.txt', 4)
 
-    # union_feature_quality_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/315_features_0_sides.txt', 0)
-    # union_feature_quality_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/315_features_1_sides.txt', 1)
-    # union_feature_quality_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/315_features_2_sides.txt', 2)
-    # union_feature_quality_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/315_features_3_sides.txt', 3)
-    # union_feature_quality_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/315_features_4_sides.txt', 4)
+    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_0.txt', 0)
+    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_1.txt', 1)
+    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_2.txt', 2)
+    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_3.txt', 3)
+    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_4.txt', 4)
+
+    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_0.txt', 0)
+    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_1.txt', 1)
+    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_2.txt', 2)
+    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_3.txt', 3)
+    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_4.txt', 4)
+
+    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_0.txt', 0)
+    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_1.txt', 1)
+    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_2.txt', 2)
+    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_3.txt', 3)
+    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_4.txt', 4)
 
     # 将特征和目标结合
-    # union_feature_quality_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_0.txt', 0)
-    # union_feature_quality_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_1.txt', 1)
-    # union_feature_quality_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_2.txt', 2)
-    # union_feature_quality_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_3.txt', 3)
-    # union_feature_quality_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_4.txt', 4)
-
-
-
+    # union_feature_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_0.txt', 0)
+    # union_feature_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_1.txt', 1)
+    # union_feature_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_2.txt', 2)
+    # union_feature_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_3.txt', 3)
+    # union_feature_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_4.txt', 4)
