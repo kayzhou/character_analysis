@@ -5,8 +5,6 @@ import json
 import os
 import numpy as np
 import datetime
-import codecs
-# from NLP_tool import seg_word, filter, tf_idf
 from sklearn.datasets import load_svmlight_file
 from sklearn.datasets import dump_svmlight_file
 from math import log
@@ -100,59 +98,59 @@ def read_user_data(in_name, out_name):
 
 
 def read_keyword_set():
-    return set([line.strip() for line in open('data/word_list/keyword.txt', encoding='utf8')])
+    return list([line.strip() for line in open('data/word_list/keyword.txt', encoding='utf8')])
 
 
-def read_text_data(in_name, out_name):
-    '''
-    抽取text字段,写入文件
-    :param in_name:
-    :param out_name:
-    :return:
-    '''
-    keyword_set = read_keyword_set()
-    in_file = open(in_name)
-    out_file = open(out_name, 'a', encoding='utf8')
-    for line in in_file:
-        line = json.loads(line.strip())
-        text = line['text'].replace('\n', '')
+# def read_text_data(in_name, out_name):
+#     '''
+#     抽取text字段,写入文件
+#     :param in_name:
+#     :param out_name:
+#     :return:
+#     '''
+#     keyword_set = read_keyword_set()
+#     in_file = open(in_name)
+#     out_file = open(out_name, 'a', encoding='utf8')
+#     for line in in_file:
+#         line = json.loads(line.strip())
+#         text = line['text'].replace('\n', '')
+#
+#         # 判断是否有关键词
+#         for keyword in keyword_set:
+#             if keyword in text:
+#                 # print(text)
+#                 out_file.write(seg_word(filter(text)) + '\n')
+#                 # out_file.write(filter(text) + '\n')
+#                 # out_file.write(text + '\n')
+#                 break
 
-        # 判断是否有关键词
-        for keyword in keyword_set:
-            if keyword in text:
-                # print(text)
-                out_file.write(seg_word(filter(text)) + '\n')
-                # out_file.write(filter(text) + '\n')
-                # out_file.write(text + '\n')
-                break
 
-
-def save_related_words(in_name, out_name_dir):
-    '''
-    保存相关词, 词的共现
-    :param in_name:
-    :param out_name:
-    :return:
-    '''
-    def read_keyword_set():
-        return set([line.strip() for line in open('data/keyword.txt', encoding='utf8')])
-
-    print(in_name)
-    keyword_set = read_keyword_set()
-    # print(len(keyword_set))
-    in_file = open(in_name)
-    for line in in_file:
-        line = json.loads(line.strip())
-        text = line['text'].replace('\n', '')
-
-        # 判断是否有关键词
-        for keyword in keyword_set:
-            if keyword in text:
-                # print(text)
-                open(out_name_dir + '/' + keyword, 'a', encoding='utf8').write(seg_word(filter(text)) + '\n')
-                # out_file.write(filter(text) + '\n')
-                # out_file.write(text + '\n')
-                break
+# def save_related_words(in_name, out_name_dir):
+#     '''
+#     保存相关词, 词的共现
+#     :param in_name:
+#     :param out_name:
+#     :return:
+#     '''
+#     def read_keyword_set():
+#         return set([line.strip() for line in open('data/keyword.txt', encoding='utf8')])
+#
+#     print(in_name)
+#     keyword_set = read_keyword_set()
+#     # print(len(keyword_set))
+#     in_file = open(in_name)
+#     for line in in_file:
+#         line = json.loads(line.strip())
+#         text = line['text'].replace('\n', '')
+#
+#         # 判断是否有关键词
+#         for keyword in keyword_set:
+#             if keyword in text:
+#                 # print(text)
+#                 open(out_name_dir + '/' + keyword, 'a', encoding='utf8').write(seg_word(filter(text)) + '\n')
+#                 # out_file.write(filter(text) + '\n')
+#                 # out_file.write(text + '\n')
+#                 break
 
 
 def load_user_data(in_name):
@@ -179,7 +177,6 @@ def line_static_features(line, last_dt):
 
     x = []
     raw_data = json.loads(line.strip())['user']
-    x.append(raw_data['id'])
 
     # 性别
     if raw_data['gender'] == 'm':
@@ -231,11 +228,11 @@ def extract_static_features(in_dir='data/users_20160302', out_name='data/feature
     for file_name in os.listdir(in_dir):
         if os.path.isfile(os.path.join(in_dir, file_name)) and file_name in psy_test_data:
             in_name = os.path.join(in_dir, file_name)
-            print(in_name)
+            print(file_name)
             last_dt = last_weibo(in_name)
             line = open(in_name).readline().strip()
             X = line_static_features(line, last_dt)
-            out_file.write(' '.join([str(x) for x in X]) + '\n')
+            out_file.write(file_name + ' ' + ' '.join([str(x) for x in X]) + '\n')
 
 
 def last_weibo(in_name):
@@ -245,6 +242,10 @@ def last_weibo(in_name):
         if d > last:
             last = d
     return last
+
+
+def how_many_weibo(in_name):
+    return len(open(in_name).readlines())
 
 
 def file_dynamic_features(in_name):
@@ -529,6 +530,8 @@ def union_feature(in_name_feature, in_name_quality, out_name, target_index, igno
     out_file = open(out_name, 'w')
     if ignore:
         ignores = get_ignore_index()
+    else:
+        ignores = []
 
     for i in range(len(feature_data)):
 
@@ -596,6 +599,7 @@ def union_feature_sides(in_name_feature, in_name_quality, out_name, target_index
         # out_file.write(' '.join([str(yi) for yi in y]) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
 
 
+
 if __name__ == '__main__':
     user_id = read_user_id()
     psy_test_data = read_psy_test_data()
@@ -609,15 +613,6 @@ if __name__ == '__main__':
     # classify_goals('data/regress_train_data.txt')
     # classify_target_3('data/classify3_train_data.txt')
 
-    # 提取用户微博文本, 并进行分词
-    # for file_name in os.listdir('data/users_20160302'):
-    #     if os.path.isfile(os.path.join('data/users_20160302', file_name)) and file_name in user_id:
-    #         print(file_name)
-    #         tweets = exact_user_text(os.path.join('data/users_20160302', file_name))
-    #         print(len(tweets))
-    #         for t in tweets:
-    #             open(os.path.join('data/text_one_line', file_name+'.txt'), 'a', encoding='utf8').write(seg_word(filter(t)))
-
 
     # 写入用户静态数据
     # for uid in user_id:
@@ -630,7 +625,7 @@ if __name__ == '__main__':
     #     save_related_words(os.path.join('data/users_20160302', uid), 'data/related_weibo')
 
     # 静态特征
-    # extract_static_features()
+    extract_static_features()
 
     # 动态特征
     # extract_dynamic_features()

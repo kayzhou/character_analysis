@@ -123,4 +123,4 @@ if __name__ == '__main__':
     # ca_svm_grid('data/SVM/328_IGNORE_features_sides_3.txt', 'model/svm_328_features_sides_3.mod')
     # ca_svm_grid('data/SVM/328_IGNORE_features_sides_4.txt', 'model/svm_328_features_sides_4.mod')
 
-    svm_predict('data/features_IGNORE_328.txt', 'model/svm_328_features_sides_0.mod')
+    svm_predict('data/features_IGNORE_328.txt', 'model/svm_328_features_sides_4.mod')

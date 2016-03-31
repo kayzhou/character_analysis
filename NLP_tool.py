@@ -13,6 +13,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 import os
 import numpy as np
+# from feature_handler import read_user_id, exact_user_text
 
 
 def filter(s):
@@ -125,9 +126,9 @@ def count_words(in_name, out_name):
     f.close()
 
 
-def count_words_voc(in_name, out_name, voc=True):
+def count_words_voc(in_name, out_name, voc='data/keyword.txt'):
     def read_keyword_set():
-        return set([line.strip() for line in open('data/keyword.txt', encoding='utf8')])
+        return list([line.strip() for line in open('data/keyword.txt', encoding='utf8')])
 
     dic = {}
     for kw in read_keyword_set():
@@ -150,6 +151,16 @@ def count_words_voc(in_name, out_name, voc=True):
         # f.write(i[0] + '\t' + str(i[1]) +'\n')
         f.write(i[0] + '\n')
     f.close()
+
+
+def appear_words_voc(in_str, voc):
+    vector = np.array([0] * len(voc))
+    for i, word in enumerate(voc):
+        if word in in_str:
+            vector[i] = 1
+
+    return vector.tolist()
+
 
 
 def vectorizer(in_name, out_name):
@@ -184,8 +195,8 @@ def vectorizer_dir(in_dir, out_name, voc_name):
     :param out_name:
     :return:
     '''
-    def read_keyword_set():
-        return set([line.strip() for line in open(voc_name, encoding='utf8')])
+    def read_keyword_list():
+        return list([line.strip() for line in open(voc_name, encoding='utf8')])
 
     corpus = []
     for file_name in os.listdir(in_dir):
@@ -194,16 +205,29 @@ def vectorizer_dir(in_dir, out_name, voc_name):
             # print(os.path.join(in_dir, file_name).read())
             corpus.append(open(os.path.join(in_dir, file_name), encoding='utf8').read())
 
-    vector = CountVectorizer(vocabulary=read_keyword_set())
+
+    vector = CountVectorizer(vocabulary=read_keyword_list())
     re = vector.fit_transform(corpus).toarray()
     out_file = open(out_name, 'w')
     for row in re:
-        out_file.write(' '.join([str(int(bool(r))) for r in row]) + '\n')
-        # out_file.write(' '.join([str(r) for r in row]) + '\n')
+        # out_file.write(' '.join([str(int(bool(r))) for r in row]) + '\n')
+        out_file.write(' '.join([str(r) for r in row]) + '\n')
 
 
 if __name__ == '__main__':
     # print(seg_word(filter('//转发微博.')))
     # tf_idf('data/text_one_line', 'data/tfidf_scale')
     # count_words_voc('data/text_data.txt', 'keyword.txt')
-    vectorizer_dir('data/text_one_line', 'data/word_appear_scale_test.txt', 'data/word_list/keyword.txt')
+
+    # user_id = read_user_id()
+    # # 提取用户微博文本, 并进行分词
+    # for file_name in os.listdir('data/users_20160302'):
+    #     if os.path.isfile(os.path.join('data/users_20160302', file_name)) and file_name in user_id:
+    #         print(file_name)
+    #         tweets = exact_user_text(os.path.join('data/users_20160302', file_name))
+    #         for t in tweets:
+    #             open(os.path.join('data/text_one_line', file_name+'.txt'), 'a', encoding='utf8').write(seg_word(filter(t)))
+
+    # vectorizer_dir('data/text_one_line', 'data/331_word_count_scale.txt', 'data/word_list/keyword.txt')
+
+    print(appear_words_voc('123', ['1','皇上','3']))
