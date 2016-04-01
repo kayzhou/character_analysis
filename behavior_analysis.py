@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     mean_var('data/split_class/large_IGNORE_331_4_n1.txt')
     mean_var('data/split_class/large_IGNORE_331_4_1.txt')
-    #
+
     # mean_var('data/split_class/large_IGNORE_331_4_shopping_n1.txt')
     # mean_var('data/split_class/large_IGNORE_331_4_shopping_1.txt')
 
