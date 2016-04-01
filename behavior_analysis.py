@@ -52,8 +52,8 @@ if __name__ == '__main__':
     # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_4_n1.txt',
     #              'data/split_class/large_IGNORE_331_4_1.txt', 'data/tags/large_tag_311_4.txt')
 
-    split_2class('data/features_328_shopping.txt', 'data/split_class/large_IGNORE_331_1_shopping_n1.txt',
-                 'data/split_class/large_IGNORE_331_1_shopping_1.txt', 'data/tags/328_IGNORE_sides_1.txt')
+    split_2class('data/large_401_shopping.txt', 'data/split_class/large_IGNORE_401_shopping_n1.txt',
+                 'data/split_class/large_IGNORE_401_shopping_1.txt', 'data/tags/large_tag_311_1.txt')
     # split_2class('data/features_328_shopping.txt', 'data/split_class/large_IGNORE_331_4_shopping_n1.txt',
     #              'data/split_class/large_IGNORE_331_4_shopping_1.txt', 'data/tags/328_IGNORE_sides_4.txt')
 
