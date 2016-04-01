@@ -245,7 +245,7 @@ def last_weibo(in_name):
 
 
 def how_many_weibo(in_name):
-    return len(open(in_name).readlines())
+    return len(open(in_name, encoding='utf8').readlines())
 
 
 def file_dynamic_features(in_name):

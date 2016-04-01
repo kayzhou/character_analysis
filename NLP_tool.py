@@ -6,14 +6,16 @@ import jieba.posseg as pseg
 import emotion_cla.filer
 import emotion_cla.separate
 import codecs
-jieba.load_userdict('NLP_data/user_dict.txt')
-stop_word_set = set([word.strip() for word in codecs.open('NLP_data/stop_word.txt').readlines()])
 from sklearn import feature_extraction
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 import os
 import numpy as np
-# from feature_handler import read_user_id, exact_user_text
+from feature_handler import how_many_weibo
+import json
+
+jieba.load_userdict('NLP_data/user_dict.txt')
+stop_word_set = set([word.strip() for word in codecs.open('NLP_data/stop_word.txt').readlines()])
 
 
 def filter(s):
@@ -104,7 +106,7 @@ def file2vector(in_name):
     return np.loadtxt(in_name)
 
 
-def count_words(in_name, out_name):
+def features_count_words(in_name, out_name):
     dic={}
     for i in open(in_name, encoding='utf8'):
         i=i.strip()
@@ -126,7 +128,7 @@ def count_words(in_name, out_name):
     f.close()
 
 
-def count_words_voc(in_name, out_name, voc='data/keyword.txt'):
+def features_count_words_voc(in_name, out_name, voc='data/keyword.txt'):
     def read_keyword_set():
         return list([line.strip() for line in open('data/keyword.txt', encoding='utf8')])
 
@@ -161,6 +163,22 @@ def appear_words_voc(in_str, voc):
 
     return vector.tolist()
 
+
+def count_words_voc(in_str, voc):
+    words = in_str.split(' ')
+    vector = np.array([0] * len(voc))
+    for w in words:
+        for i, word in enumerate(voc):
+            # print('子串:', w, '关键词:', word)
+            if w == word:
+                vector[i] += 1
+
+    return vector
+
+
+def count_words_file(in_name, voc):
+    in_str = ' '.join(open(in_name).readlines())
+    return count_words_file(in_str, voc)
 
 
 def vectorizer(in_name, out_name):
@@ -230,4 +248,18 @@ if __name__ == '__main__':
 
     # vectorizer_dir('data/text_one_line', 'data/331_word_count_scale.txt', 'data/word_list/keyword.txt')
 
-    print(appear_words_voc('123', ['1','皇上','3']))
+    dir_name = '../extract_weibo_users/weibo_0320'
+    # dir_name = "/Users/Kay/Project/EXP/character_analysis/data/users_20160302"
+    out_dir= '../extract_weibo_users/seg_0320'
+
+    for in_name in os.listdir(dir_name):
+        if len(in_name) != 10: # 长度为10是有效的uid
+            continue
+        elif how_many_weibo(dir_name + "/" + in_name) < 100: # 爬取到的微博数小于100
+            continue
+        out_file = open(out_dir + "/" + in_name, 'w', encoding='utf8')
+        print(in_name)
+        for line in open(dir_name + "/" + in_name, encoding='utf8'):
+            # print(line)
+            seg = seg_word(filter(json.loads(line.strip())["text"]))
+            out_file.write(seg + '\n')
