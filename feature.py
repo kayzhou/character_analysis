@@ -69,9 +69,9 @@ def get_features(in_name):
 
 if __name__ == '__main__':
 
-    dir_name = '../extract_weibo_users/weibo_0320'
+    # dir_name = '../extract_weibo_users/weibo_0320'
     dir_name = "/Users/Kay/Project/EXP/character_analysis/data/users_20160302"
-    out_file = open('features_large_IGNORE_311.txt', 'w')
+    out_file = open('train_IGNORE_311.txt', 'w')
     for in_name in os.listdir(dir_name):
         if len(in_name) != 10: # 长度为10是有效的uid
             continue

@@ -625,7 +625,7 @@ if __name__ == '__main__':
     #     save_related_words(os.path.join('data/users_20160302', uid), 'data/related_weibo')
 
     # 静态特征
-    extract_static_features()
+    # extract_static_features()
 
     # 动态特征
     # extract_dynamic_features()
@@ -652,23 +652,17 @@ if __name__ == '__main__':
     # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_3.txt', 3)
     # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_4.txt', 4)
 
-    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_0.txt', 0)
-    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_1.txt', 1)
-    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_2.txt', 2)
-    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_3.txt', 3)
-    union_feature('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_4.txt', 4)
+    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_0.txt', 0)
+    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_1.txt', 1)
+    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_2.txt', 2)
+    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_3.txt', 3)
+    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_4.txt', 4)
 
-    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_0.txt', 0)
-    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_1.txt', 1)
-    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_2.txt', 2)
-    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_3.txt', 3)
-    union_feature('data/features/328_features.txt', 'data/regress_train_data.txt', 'data/SVM/328_IGNORE_features_regress_4.txt', 4)
-
-    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_0.txt', 0)
-    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_1.txt', 1)
-    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_2.txt', 2)
-    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_3.txt', 3)
-    union_feature_sides('data/features/328_features.txt', 'data/classify3_train_data.txt', 'data/SVM/328_IGNORE_features_sides_4.txt', 4)
+    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_0.txt', 0)
+    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_1.txt', 1)
+    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_2.txt', 2)
+    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_3.txt', 3)
+    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_4.txt', 4)
 
     # 将特征和目标结合
     # union_feature_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_0.txt', 0)

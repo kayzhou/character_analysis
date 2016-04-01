@@ -34,6 +34,11 @@ SVM 二分类：
 2048.0 3.0517578125e-05 61.7647
 2.0 0.0078125 64.2202
 
+0.5 0.00048828125 41.3793
+2.0 0.0078125 46.8966
+0.5 0.00048828125 36.5517
+0.03125 0.0078125 49.6552
+2.0 0.0001220703125 46.2069
 '''
 
 def ca_svm(in_name, out_model_name, C, gamma):
@@ -47,7 +52,7 @@ def ca_svm(in_name, out_model_name, C, gamma):
     print('10次10折交叉检验 =', cvs / 10)
     y_hat = clf.predict(X)
     print('预测结果 =', y_hat)
-    # print('实际结果 =', y)
+    print('实际结果 =', y)
     joblib.dump(clf, out_model_name)
     print('训练数据上的表现 =', clf.score(X, y))
     print('F1 score =', f1_score(y, y_hat, average='macro'))
@@ -88,7 +93,7 @@ def ca_svm_grid(in_name, out_model_name):
 def svm_predict(in_name, model):
     clf = joblib.load(model)
     for line in open(in_name):
-        X = np.array([[float(x) for x in line.strip()[22:].split(' ')]])
+        X = np.array([[float(x) for x in line.strip()[11:].split(' ')]])
         X.reshape(-1, 1)
         # print(X)
         y = clf.predict(X)
@@ -99,11 +104,11 @@ def svm_predict(in_name, model):
 
 if __name__ == '__main__':
 
-    # ca_svm('data/SVM/328_IGNORE_features_0.txt', 'model/svm_328_features_0.mod', 0.03125, 2.0)
-    # ca_svm('data/SVM/328_IGNORE_features_1.txt', 'model/svm_328_features_1.mod', 128.0, 3.0517578125e-05)
-    # ca_svm('data/SVM/328_IGNORE_features_2.txt', 'model/svm_328_features_2.mod', 8.0, 0.00048828125)
-    # ca_svm('data/SVM/328_IGNORE_features_3.txt', 'model/svm_328_features_3.mod', 8.0, 0.0001220703125)
-    # ca_svm('data/SVM/328_IGNORE_features_4.txt', 'model/svm_328_features_4.mod', 2.0, 3.0517578125e-05)
+    # ca_svm('data/SVM/331_IGNORE_features_0.txt', 'model/svm_331_features_0.mod', 0.5, 0.00048828125)
+    # ca_svm('data/SVM/331_IGNORE_features_1.txt', 'model/svm_331_features_1.mod', 2.0, 0.0078125)
+    # ca_svm('data/SVM/331_IGNORE_features_2.txt', 'model/svm_331_features_2.mod', 0.5, 0.00048828125)
+    # ca_svm('data/SVM/331_IGNORE_features_3.txt', 'model/svm_331_features_3.mod', 0.03125, 0.0078125)
+    # ca_svm('data/SVM/331_IGNORE_features_4.txt', 'model/svm_331_features_4.mod', 2.0, 0.0001220703125)
 
     # ca_svm('data/SVM/328_IGNORE_features_sides_0.txt', 'model/svm_328_features_sides_0.mod', 2.0, 0.03125)
     # ca_svm('data/SVM/328_IGNORE_features_sides_1.txt', 'model/svm_328_features_sides_1.mod', 512.0, 3.0517578125e-05)
@@ -123,4 +128,4 @@ if __name__ == '__main__':
     # ca_svm_grid('data/SVM/328_IGNORE_features_sides_3.txt', 'model/svm_328_features_sides_3.mod')
     # ca_svm_grid('data/SVM/328_IGNORE_features_sides_4.txt', 'model/svm_328_features_sides_4.mod')
 
-    svm_predict('data/features_IGNORE_328.txt', 'model/svm_328_features_sides_4.mod')
+    svm_predict('data/large_IGNORE_331.txt', 'model/svm_331_features_4.mod')
