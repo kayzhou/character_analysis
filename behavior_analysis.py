@@ -40,6 +40,7 @@ def mean_var(in_name):
 
 
 if __name__ == '__main__':
+
     # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_0_n1.txt',
     #              'data/split_class/large_IGNORE_331_0_1.txt', 'data/tags/328_IGNORE_sides_0.txt')
     # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_1_n1.txt',
