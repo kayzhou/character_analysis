@@ -97,15 +97,17 @@ def svm_predict(in_name, model):
         X.reshape(-1, 1)
         # print(X)
         y = clf.predict(X)
-        # y_pro = clf.predict_proba(X)
-        # print(line[:10], y[0], y_pro[0][0], y_pro[0][1])
-        print(line[:10], y[0])
+        y_pro = clf.predict_proba(X)
+        # print(line[:10], y, y_pro)
+        if y[0] == -1:
+            print(line[:10], y_pro[0][0], y_pro[0][1], y_pro[0][2])
+        # print(line[:10], y[0])
 
 
 if __name__ == '__main__':
 
     # ca_svm('data/SVM/331_IGNORE_features_0.txt', 'model/svm_331_features_0.mod', 0.5, 0.00048828125)
-    # ca_svm('data/SVM/331_IGNORE_features_1.txt', 'model/svm_331_features_1.mod', 2.0, 0.0078125)
+    ca_svm('data/SVM/331_IGNORE_features_1.txt', 'model/svm_331_features_1.mod', 2.0, 0.0078125)
     # ca_svm('data/SVM/331_IGNORE_features_2.txt', 'model/svm_331_features_2.mod', 0.5, 0.00048828125)
     # ca_svm('data/SVM/331_IGNORE_features_3.txt', 'model/svm_331_features_3.mod', 0.03125, 0.0078125)
     # ca_svm('data/SVM/331_IGNORE_features_4.txt', 'model/svm_331_features_4.mod', 2.0, 0.0001220703125)
@@ -128,4 +130,4 @@ if __name__ == '__main__':
     # ca_svm_grid('data/SVM/328_IGNORE_features_sides_3.txt', 'model/svm_328_features_sides_3.mod')
     # ca_svm_grid('data/SVM/328_IGNORE_features_sides_4.txt', 'model/svm_328_features_sides_4.mod')
 
-    svm_predict('data/large_IGNORE_331.txt', 'model/svm_331_features_4.mod')
+    # svm_predict('data/large_IGNORE_331.txt', 'model/svm_331_features_1.mod')

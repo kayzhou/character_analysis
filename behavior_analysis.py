@@ -20,6 +20,7 @@ def split_2class(feature_in_name, out_name_n1, out_name_1, tag_name):
             tag = dict_tags[uid]
         except KeyError:
             print("缺失:", uid)
+            tag = 'error'
 
         # 此处需要看 'feature_in_name' 实际数据格式
         for_write = line
@@ -52,8 +53,8 @@ if __name__ == '__main__':
     # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_4_n1.txt',
     #              'data/split_class/large_IGNORE_331_4_1.txt', 'data/tags/large_tag_311_4.txt')
 
-    split_2class('data/large_401_shopping.txt', 'data/split_class/large_IGNORE_401_shopping_n1.txt',
-                 'data/split_class/large_IGNORE_401_shopping_1.txt', 'data/tags/large_tag_311_1.txt')
+    split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_401_features_n1_pro.txt',
+                 'data/split_class/large_IGNORE_401_features_1_pro.txt', 'data/tags/401_svm_pro.txt')
     # split_2class('data/features_328_shopping.txt', 'data/split_class/large_IGNORE_331_4_shopping_n1.txt',
     #              'data/split_class/large_IGNORE_331_4_shopping_1.txt', 'data/tags/328_IGNORE_sides_4.txt')
 

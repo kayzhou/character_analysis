@@ -1,6 +1,7 @@
 data/
 model/
 features_doc/
-*.pyc
 .idea/
 test.py
+*.txt
+*.pyc
