@@ -39,7 +39,11 @@ def get_shopping_text_features(all_text):
 
 def get_features(in_name):
     # 分类器所需特征
-    # order 很重要, 必填
+
+    # ! 前方高能预警 !
+    # --- !!! order 很重要, 必填 !!! ---
+    # ! 前方高能预警 !
+
     last_w = last_weibo(in_name, order=True)
     line = json.dumps(last_w)
     all_text = ""
