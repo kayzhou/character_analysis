@@ -217,7 +217,38 @@ def line_static_features(line, last_dt):
     return x
 
 
-def extract_static_features(in_dir='data/users_20160302', out_name='data/features/static_feature.txt'):
+def line_get_badge(line):
+    '''
+    获得徽章信息
+    :param line:
+    :return:
+    '''
+    def b2i(bo):
+            '''
+            boolean类型转成可识别的int
+            :param bo:
+            :return:
+            '''
+            return str(int(bo))
+
+    x = []
+    raw_data = json.loads(line.strip())['user']
+    return x
+
+
+def last_weibo(in_name, order):
+    data = load_user_data(in_name)
+
+    if (data[0]['created_at'] > data[-1]['created_at']) and order:
+        raise KeyboardInterrupt
+
+    if order == True:
+        return data[-1]
+    else:
+        return data[0]
+
+
+def extract_static_features(in_dir='data/users_20160302', out_name='data/features/static_feature.txt', order=False):
     '''
     抽出用户静态特征
     :param in_name:
@@ -229,19 +260,10 @@ def extract_static_features(in_dir='data/users_20160302', out_name='data/feature
         if os.path.isfile(os.path.join(in_dir, file_name)) and file_name in psy_test_data:
             in_name = os.path.join(in_dir, file_name)
             print(file_name)
-            last_dt = last_weibo(in_name)
-            line = open(in_name).readline().strip()
-            X = line_static_features(line, last_dt)
+            last_w = last_weibo(in_name, order)
+            line = json.dumps(last_w)
+            X = line_static_features(line, str2datetime(last_w['created_at']))
             out_file.write(file_name + ' ' + ' '.join([str(x) for x in X]) + '\n')
-
-
-def last_weibo(in_name):
-    dts = exact_tweet_datetime(in_name)
-    last = dts[0]
-    for d in dts:
-        if d > last:
-            last = d
-    return last
 
 
 def how_many_weibo(in_name):
@@ -255,19 +277,19 @@ def file_dynamic_features(in_name):
     # 多少周发送微博, 多少天发送微博 (该周或天发送一条即可)
     cnt_weeks, cnt_days = exact_how_many_weeks_days(dts)
     # 提取时间序列的特征
-    X = exact_series_feature(exact_day_series(dts), cnt_weeks) \
-        + exact_series_feature(exact_week_series(dts), cnt_days)
+    X = exact_series_feature(exact_day_series(dts), cnt_days) \
+        + exact_series_feature(exact_week_series(dts), cnt_weeks)
     # 为了过滤!
     # return X
     # 获取转发的日期时间
     retweet_dts = exact_tweet_datetime(in_name, action='retweet')
-    X += (exact_series_feature(exact_day_series(retweet_dts), cnt_weeks) \
-        + exact_series_feature(exact_week_series(retweet_dts), cnt_days))
+    X += (exact_series_feature(exact_day_series(retweet_dts), cnt_days) \
+        + exact_series_feature(exact_week_series(retweet_dts), cnt_weeks))
 
     # 获取@的日期时间
     at_dts = exact_tweet_datetime(in_name, action='at')
-    X += (exact_series_feature(exact_day_series(at_dts), cnt_weeks) \
-        + exact_series_feature(exact_week_series(at_dts), cnt_days))
+    X += (exact_series_feature(exact_day_series(at_dts), cnt_days) \
+        + exact_series_feature(exact_week_series(at_dts), cnt_weeks))
 
     # 转发比例
     X.append(len(retweet_dts) / (len(dts) + 1))
@@ -517,6 +539,8 @@ def get_ignore_index():
     return new_data
 
 
+
+
 def union_feature(in_name_feature, in_name_quality, out_name, target_index, ignore=True):
     '''
     将特征和目标合并
@@ -541,8 +565,8 @@ def union_feature(in_name_feature, in_name_quality, out_name, target_index, igno
         y = quality_data[i][target_index]
         x = feature_data[i][1:] # 不考虑uid
 
-        out_file.write(str(y) + ' ' + ' '.join([str(i + 1) + ':' + str(xi) for i, xi in enumerate(x)]) + '\n')
-        # out_file.write(str(y) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
+        # out_file.write(str(y) + ' ' + ' '.join([str(i + 1) + ':' + str(xi) for i, xi in enumerate(x)]) + '\n')
+        out_file.write(str(y) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
         # out_file.write(' '.join([str(yi) for yi in y]) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
     # dump_svmlight_file(x, y, out_name)
 
@@ -594,8 +618,8 @@ def union_feature_sides(in_name_feature, in_name_quality, out_name, target_index
         if y == 0: continue
         x = feature_data[i][1:] # 不考虑uid
 
-        out_file.write(str(y) + ' ' + ' '.join([str(i + 1) + ':' + str(xi) for i, xi in enumerate(x)]) + '\n')
-        # out_file.write(str(y) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
+        # out_file.write(str(y) + ' ' + ' '.join([str(i + 1) + ':' + str(xi) for i, xi in enumerate(x)]) + '\n')
+        out_file.write(str(y) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
         # out_file.write(' '.join([str(yi) for yi in y]) + ' ' + ' '.join([str(xi) for xi in x]) + '\n')
 
 
@@ -652,17 +676,17 @@ if __name__ == '__main__':
     # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_3.txt', 3)
     # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_4.txt', 4)
 
-    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_0.txt', 0)
-    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_1.txt', 1)
-    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_2.txt', 2)
-    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_3.txt', 3)
-    union_feature('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_4.txt', 4)
+    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_0.txt', 0)
+    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_1.txt', 1)
+    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_2.txt', 2)
+    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_3.txt', 3)
+    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_4.txt', 4)
 
-    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_0.txt', 0)
-    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_1.txt', 1)
-    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_2.txt', 2)
-    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_3.txt', 3)
-    union_feature_sides('train_IGNORE_311_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/331_IGNORE_NOR_sides_4.txt', 4)
+    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_0.txt', 0)
+    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_1.txt', 1)
+    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_2.txt', 2)
+    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_3.txt', 3)
+    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_4.txt', 4)
 
     # 将特征和目标结合
     # union_feature_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_0.txt', 0)

@@ -82,4 +82,4 @@ def ca_hist_features(index):
 
 if __name__ == '__main__':
     # ca_hist_features(1)
-    ca_box_plot_features(8)
+    ca_box_plot_features(5)
