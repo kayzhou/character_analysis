@@ -2,6 +2,7 @@ data/
 model/
 features_doc/
 .idea/
+figure/
 test.py
 *.txt
 *.pyc
