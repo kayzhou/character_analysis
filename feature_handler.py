@@ -231,8 +231,6 @@ def line_get_badge(line):
         '''
         return str(int(bo))
 
-
-
     x = []
     raw_data = json.loads(line.strip())["user"]["badge"]
     print(raw_data)
@@ -472,6 +470,26 @@ def exact_tweet_datetime(in_name, action='tweet'):
     elif action == "at":
         return [str2datetime(user['created_at']) for user in user_data
                 if "@" in user["text"][:user["text"].find("//")] or ("retweeted_status" not in user and "@" in user["text"])]
+
+
+def extract_mood(in_name):
+    user_data = load_user_data(in_name)
+    mood = [0] * 6
+    for data in user_data:
+        tag = data['mood']
+        if tag == '0':
+            mood[0] += 1
+        elif tag == '1':
+            mood[1] += 1
+        elif tag == '2':
+            mood[2] += 1
+        elif tag == '3':
+            mood[3] += 1
+        elif tag == '4':
+            mood[4] += 1
+        elif tag == '-1':
+            mood[5] += 1
+    return mood
 
 
 def extract_tweet_ave_length(in_name):

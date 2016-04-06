@@ -81,10 +81,7 @@ def get_badge_features(in_name):
 
 
 def get_mood_features(in_name):
-    # order is fatal
-    last_w = last_weibo(in_name, order=False)
-    line = json.dumps(last_w)
-    return line_get_badge(line)
+    return extract_mood(in_name)
 
 
 if __name__ == '__main__':
@@ -119,12 +116,24 @@ if __name__ == '__main__':
 
 
     # 提取徽章信息
-    out_file = open('train_401_badge.txt', 'w')
+    # out_file = open('train_401_badge.txt', 'w')
+    # for in_name in os.listdir(dir_name):
+    #     if len(in_name) != 10: # 长度为10是有效的uid
+    #         continue
+    #     elif how_many_weibo(dir_name + "/" + in_name) < 100: # 爬取到的微博数小于100
+    #         continue
+    #     print(in_name)
+    #     X = get_badge_features(dir_name + "/" + in_name)
+    #     out_file.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
+
+
+    # 提取情绪信息
+    out_file = open('train_406_mood.txt', 'w')
     for in_name in os.listdir(dir_name):
         if len(in_name) != 10: # 长度为10是有效的uid
             continue
         elif how_many_weibo(dir_name + "/" + in_name) < 100: # 爬取到的微博数小于100
             continue
         print(in_name)
-        X = get_badge_features(dir_name + "/" + in_name)
+        X = get_mood_features(dir_name + "/" + in_name)
         out_file.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
