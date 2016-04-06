@@ -6,37 +6,91 @@ import pandas as pd
 import numpy as np
 
 
-def cumulative_hist():
-    n_bins = 5000
-    data1 = pd.read_csv('data/split_class/large_IGNORE_401_shopping_n1_pro.txt', sep=' ', header=None)
-    data2 = pd.read_csv('data/split_class/large_IGNORE_401_shopping_1_pro.txt', sep=' ', header=None)
+def shopping_hist():
+    n_bins = 100
+    data1 = pd.read_csv('data/split_class/large_IGNORE_404_shopping_+1.txt', sep=' ', header=None)
+    data2 = pd.read_csv('data/split_class/large_IGNORE_404_shopping_-1.txt', sep=' ', header=None)
 
-    shopping1 = data1[2]; shopping2 = data2[2]
+    shopping1 = data1[2]
+    shopping2 = data2[2]
     for i in np.arange(3, 17):
         shopping1 += data1[i]
         shopping2 += data2[i]
 
-    # print(shopping1)
-    # print(shopping2)
+    col1 = shopping1 / data1[1]
+    print(col1.describe())
+    col2 = shopping2 / data2[1]
+    print(col2.describe())
+
+    plt.subplot(1, 2, 1)
+    plt.hist(col1, n_bins, normed=True, stacked=True, alpha=0.8, color='r', linewidth=1.5)
+    plt.xlim(0, 0.5)
+    plt.ylabel("frequency")
+    plt.subplot(1, 2, 2)
+    plt.hist(col2, n_bins, normed=True, stacked=True, alpha=0.8, color='b', linewidth=1.5)
+    plt.xlim(0, 0.5)
+    plt.ylabel("frequency")
+
+    # plt.hist(data1[1], n_bins, normed=1, alpha=0.6, color='b', cumulative=True)
+    # plt.hist(data2[1], alpha=0.6, color='r')
+    plt.show()
+
+
+def badge_hist(index):
+    n_bins = 5
+    data1 = pd.read_csv('data/split_class/large_IGNORE_404_badge_+1.txt', sep=' ', header=None)
+    data2 = pd.read_csv('data/split_class/large_IGNORE_404_badge_-1.txt', sep=' ', header=None)
+
+    col1 = data1[index]
+    col2 = data2[index]
+    print(col1.mean())
+    # print(col1.describe())
+    print(col2.mean())
+    # print(col2.describe())
+    plt.subplot(1, 2, 1)
+    plt.hist(col1, n_bins, alpha=0.8, color='r', linewidth=1.5)
+    # plt.xlim(0, 0.5)
+
+    plt.ylabel("frequency")
+    plt.subplot(1, 2, 2)
+    plt.hist(col2, n_bins, alpha=0.8, color='b', linewidth=1.5)
+    # plt.xlim(0, 0.5)
+    # plt.ylabel("frequency")
+
+    # plt.hist(data1[1], n_bins, normed=1, alpha=0.6, color='b', cumulative=True)
+    # plt.hist(data2[1], alpha=0.6, color='r')
+    # plt.show()
+
+
+def cumulative_hist():
+    n_bins = 5000
+    data1 = pd.read_csv('data/split_class/large_IGNORE_404_shopping_+1.txt', sep=' ', header=None)
+    data2 = pd.read_csv('data/split_class/large_IGNORE_404_shopping_-1.txt', sep=' ', header=None)
+
+    shopping1 = data1[2]
+    shopping2 = data2[2]
+    for i in np.arange(3, 17):
+        shopping1 += data1[i]
+        shopping2 += data2[i]
 
     col1 = shopping1 / data1[1]
     col2 = shopping2 / data2[1]
-    # col1 = col1[col1 > 0]
-    # col2 = col2[col2 > 0]
 
-    print(col2)
-    plt.hist(col1, n_bins, normed=1, alpha=0.6, color='b', linewidth=1.5, histtype='step', cumulative=True)
-    plt.hist(col2, n_bins, normed=1, alpha=0.6, color='r', linewidth=1.5, histtype='step', cumulative=True)
+    plt.hist(col1, n_bins, normed=1, alpha=0.8, color='r', linewidth=1.5, histtype='step', cumulative=True)
+    plt.hist(col2, n_bins, normed=1, alpha=0.8, color='b', linewidth=1.5, histtype='step', cumulative=True)
     plt.xlim(0, 0.15)
     plt.ylim(0, 1)
+    plt.xlabel("Purchasing behavior")
+    plt.ylabel("Cumulative probability")
+
     # plt.hist(data1[1], n_bins, normed=1, alpha=0.6, color='b', cumulative=True)
     # plt.hist(data2[1], alpha=0.6, color='r')
     plt.show()
 
 
 def ca_box_plot_shopping():
-    data1 = pd.read_csv('data/split_class/large_IGNORE_401_shopping_n1_pro.txt', sep=' ', header=None)
-    data2 = pd.read_csv('data/split_class/large_IGNORE_401_shopping_1_pro.txt', sep=' ', header=None)
+    data1 = pd.read_csv('data/split_class/large_IGNORE_404_shopping_+1.txt', sep=' ', header=None)
+    data2 = pd.read_csv('data/split_class/large_IGNORE_404_shopping_-1.txt', sep=' ', header=None)
 
     shopping1 = data1[2]; shopping2 = data2[2]
     for i in np.arange(3, 17):
@@ -45,17 +99,21 @@ def ca_box_plot_shopping():
 
     col1 = shopping1 / data1[1]
     col2 = shopping2 / data2[1]
-    col1 = col1[col1 > 0][col1 < 0.2]
-    col2 = col2[col2 > 0][col2 < 0.2]
+    # col1 = col1[col1 > 0][col1 < 0.2]
+    # col2 = col2[col2 > 0][col2 < 0.2]
     print(col1.describe())
     print(col2.describe())
-    re = plt.boxplot([col1, col2], showmeans=True, showfliers=False)
+    col1.to_csv("shopping_+1.txt")
+    col2.to_csv("shopping_-1.txt")
+    plt.ylabel("Purchasing behavior")
+    plt.boxplot([col1, col2], showmeans=True, showfliers=False)
+    # plt.boxplot([col1, col2], showmeans=True)
     plt.show()
 
 
 def ca_box_plot_features(index):
-    data1 = pd.read_csv('data/split_class/large_IGNORE_401_features_n1_pro.txt', sep=' ', header=None)
-    data2 = pd.read_csv('data/split_class/large_IGNORE_401_features_1_pro.txt', sep=' ', header=None)
+    data1 = pd.read_csv('data/split_class/large_IGNORE_404_NOR_+1.txt', sep=' ', header=None)
+    data2 = pd.read_csv('data/split_class/large_IGNORE_404_NOR_-1.txt', sep=' ', header=None)
 
     col1 = data1[index]
     col2 = data2[index]
@@ -65,8 +123,8 @@ def ca_box_plot_features(index):
 
 
 def ca_hist_features(index):
-    data1 = pd.read_csv('data/split_class/large_IGNORE_401_features_n1_pro.txt', sep=' ', header=None)
-    data2 = pd.read_csv('data/split_class/large_IGNORE_401_features_1_pro.txt', sep=' ', header=None)
+    data1 = pd.read_csv('data/split_class/large_IGNORE_404_NOR_+1.txt', sep=' ', header=None)
+    data2 = pd.read_csv('data/split_class/large_IGNORE_404_NOR_-1.txt', sep=' ', header=None)
 
     col1 = data1[index]
     col2 = data2[index]
@@ -81,5 +139,10 @@ def ca_hist_features(index):
 
 
 if __name__ == '__main__':
+
     # ca_hist_features(1)
-    ca_box_plot_features(5)
+    # ca_box_plot_features(7)
+    # cumulative_hist()
+    # ca_box_plot_shopping()
+    # badge_hist(4)
+    shopping_hist()

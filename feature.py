@@ -37,14 +37,16 @@ def get_shopping_text_features(all_text):
     return count_words_voc(all_text, read_keyword_list())
 
 
-def get_features(in_name):
+def get_train_features(in_name):
     # 分类器所需特征
 
     # ! 前方高能预警 !
     # --- !!! order 很重要, 必填 !!! ---
+    # 你问我为什么??!
+    # 因为我要取到最近的一条微博啊! 不同的获取方式微博排序顺序不同, 第一个? 还是最后一个? 是最新的, I don't KNOW!
     # ! 前方高能预警 !
 
-    last_w = last_weibo(in_name, order=True)
+    last_w = last_weibo(in_name, order=False)
     line = json.dumps(last_w)
     all_text = ""
     for line in open(in_name, encoding='utf8'):
@@ -71,23 +73,38 @@ def get_behavior_features(in_name):
     return x
 
 
+def get_badge_features(in_name):
+    # order is fatal
+    last_w = last_weibo(in_name, order=False)
+    line = json.dumps(last_w)
+    return line_get_badge(line)
+
+
+def get_mood_features(in_name):
+    # order is fatal
+    last_w = last_weibo(in_name, order=False)
+    line = json.dumps(last_w)
+    return line_get_badge(line)
+
+
 if __name__ == '__main__':
 
     # 提取训练数据特征
     # dir_name = '../extract_weibo_users/weibo_0320'
     # dir_name = 'data/tmp'
     dir_name = "/Users/Kay/Project/EXP/character_analysis/data/users_20160302"
-    out_file = open('train_IGNORE_404.txt', 'w')
-    for in_name in os.listdir(dir_name):
-        if len(in_name) != 10: # 长度为10是有效的uid
-            continue
-        elif how_many_weibo(dir_name + "/" + in_name) < 100: # 爬取到的微博数小于100
-            continue
+    # out_file = open('train_IGNORE_404.txt', 'w')
+    # for in_name in os.listdir(dir_name):
+    #     if len(in_name) != 10: # 长度为10是有效的uid
+    #         continue
+    #     elif how_many_weibo(dir_name + "/" + in_name) < 100: # 爬取到的微博数小于100
+    #         continue
+    #
+    #     print(in_name)
+    #     X = get_train_features(dir_name + "/" + in_name)
+    #     if X:
+    #         out_file.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
 
-        print(in_name)
-        X = get_features(dir_name + "/" + in_name)
-        if X:
-            out_file.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
 
     # 提取需要分析的文本特征
     # out_file = open('large_401_shopping.txt', 'w')
@@ -99,3 +116,15 @@ if __name__ == '__main__':
     #     print(in_name)
     #     X = get_behavior_features(dir_name + "/" + in_name)
     #     out_file.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
+
+
+    # 提取徽章信息
+    out_file = open('train_401_badge.txt', 'w')
+    for in_name in os.listdir(dir_name):
+        if len(in_name) != 10: # 长度为10是有效的uid
+            continue
+        elif how_many_weibo(dir_name + "/" + in_name) < 100: # 爬取到的微博数小于100
+            continue
+        print(in_name)
+        X = get_badge_features(dir_name + "/" + in_name)
+        out_file.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")

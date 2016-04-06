@@ -224,15 +224,56 @@ def line_get_badge(line):
     :return:
     '''
     def b2i(bo):
-            '''
-            boolean类型转成可识别的int
-            :param bo:
-            :return:
-            '''
-            return str(int(bo))
+        '''
+        boolean类型转成可识别的int
+        :param bo:
+        :return:
+        '''
+        return str(int(bo))
+
+
 
     x = []
-    raw_data = json.loads(line.strip())['user']
+    raw_data = json.loads(line.strip())["user"]["badge"]
+    print(raw_data)
+    # 绑定淘宝
+    if "bind_taobao" in raw_data:
+        x.append(b2i(raw_data["bind_taobao"]))
+    else:
+        x.append("0")
+    # 双十一
+    if "shuang11_2015" in raw_data:
+        x.append(b2i(raw_data["shuang11_2015"]))
+    else:
+        x.append("0")
+    # 淘宝
+    if "taobao" in raw_data:
+        x.append(b2i(raw_data["taobao"]))
+    else:
+        x.append("0")
+    # 红包 2014
+    if "hongbao_2014" in raw_data:
+        x.append(b2i(raw_data["taobao"]))
+    else:
+        x.append("0")
+    # 红包 2015
+    if "hongbao_2015" in raw_data:
+        x.append(b2i(raw_data["taobao"]))
+    else:
+        x.append("0")
+
+    # x.append(b2i(raw_data["uc_domain"]))
+    # x.append(b2i(raw_data["enterprise"]))
+    # x.append(b2i(raw_data["suishoupai_2014"]))
+    # x.append(b2i(raw_data["zongyiji"]))
+    # x.append(b2i(raw_data["gongyi_level"]))
+    # x.append(b2i(raw_data["dailv"]))
+    # x.append(b2i(raw_data["gongyi"]))
+    # x.append(b2i(raw_data["travel2013"]))
+    # x.append(b2i(raw_data["anniversary"]))
+    # x.append(b2i(raw_data["pzsd_2015"]))
+
+    print(x)
     return x
 
 
@@ -539,8 +580,6 @@ def get_ignore_index():
     return new_data
 
 
-
-
 def union_feature(in_name_feature, in_name_quality, out_name, target_index, ignore=True):
     '''
     将特征和目标合并
@@ -664,29 +703,23 @@ if __name__ == '__main__':
     # f.close()
 
     # 将特征和目标结合
-    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_0.txt', 0)
-    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_1.txt', 1)
-    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_2.txt', 2)
-    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_3.txt', 3)
-    # union_feature('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_4.txt', 4)
-    #
-    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_0.txt', 0)
-    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_1.txt', 1)
-    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_2.txt', 2)
-    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_3.txt', 3)
-    # union_feature_sides('data/features/315_features.txt', 'data/classify3_train_data.txt', 'data/SVM/325_features_sides_4.txt', 4)
+    union_feature('data/features/train_IGNORE_404.txt', 'data/regress_train_data.txt', 'data/for_analysis/404_IGNORE_NOR_0.txt', 0)
+    union_feature('data/features/train_IGNORE_404.txt', 'data/regress_train_data.txt', 'data/for_analysis/404_IGNORE_NOR_1.txt', 1)
+    union_feature('data/features/train_IGNORE_404.txt', 'data/regress_train_data.txt', 'data/for_analysis/404_IGNORE_NOR_2.txt', 2)
+    union_feature('data/features/train_IGNORE_404.txt', 'data/regress_train_data.txt', 'data/for_analysis/404_IGNORE_NOR_3.txt', 3)
+    union_feature('data/features/train_IGNORE_404.txt', 'data/regress_train_data.txt', 'data/for_analysis/404_IGNORE_NOR_4.txt', 4)
 
-    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_0.txt', 0)
-    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_1.txt', 1)
-    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_2.txt', 2)
-    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_3.txt', 3)
-    union_feature('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_4.txt', 4)
+    # union_feature('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_0.txt', 0)
+    # union_feature('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_1.txt', 1)
+    # union_feature('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_2.txt', 2)
+    # union_feature('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_3.txt', 3)
+    # union_feature('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_4.txt', 4)
 
-    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_0.txt', 0)
-    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_1.txt', 1)
-    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_2.txt', 2)
-    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_3.txt', 3)
-    union_feature_sides('data/features/train_IGNORE_311.txt', 'data/regress_train_data.txt', 'data/for_analysis/331_IGNORE_sides_4.txt', 4)
+    # union_feature_sides('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_sides_0.txt', 0)
+    # union_feature_sides('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_sides_1.txt', 1)
+    # union_feature_sides('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_sides_2.txt', 2)
+    # union_feature_sides('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_sides_3.txt', 3)
+    # union_feature_sides('data/features/train_IGNORE_404_NOR.txt', 'data/classify3_train_data.txt', 'data/SVM/404_NOR_features_sides_4.txt', 4)
 
     # 将特征和目标结合
     # union_feature_tfidf('data/tfidf_scale', 'data/classify3_train_data.txt', 'data/SVM/314_tfidf_scale_0.txt', 0)
