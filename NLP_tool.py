@@ -90,14 +90,14 @@ def tf_idf(in_dir, out_dir):
 
     # 打印词表
     out_file = open('data/word_list.txt', 'a', encoding='utf8')
-    for i in range(len(word)):
+    for i in list(range(len(word))):
         out_file.write(str(word[i]) + '\n')
     out_file.close()
 
     # 打印每类文本的tf-idf词语权重，第一个for遍历所有文本，第二个for便利某一类文本下的词语权重
-    for i in range(len(weight)):
+    for i in list(range(len(weight))):
         print("------ 第", i ,u"类文本的词语tf-idf权重 ------")
-        for j in range(len(word)):
+        for j in list(range(len(word))):
             open(out_dir + '/' + files[i], 'a', encoding='utf8').write(str(weight[i][j])+ ' ')
 
 
@@ -110,7 +110,7 @@ def features_count_words(in_name, out_name):
     dic={}
     for i in open(in_name, encoding='utf8'):
         i=i.strip()
-        array=i.split(' ')
+        array=i.split(' <a ')
         for j in array:
             if j not in dic:
                 dic[j]=0
@@ -120,11 +120,17 @@ def features_count_words(in_name, out_name):
     dic = sorted(dic.items(), key=lambda d: d[1], reverse=True)
     # print(dic)
     for i in dic:
-        if i[1] > 1000 or i[1] < 100 \
+
+        # 限制条件
+        if i[1] > 10000000 or i[1] < 100 \
                 or len(i[0]) == 1 \
-                    or emotion_cla.separate.is_stop_word(i[0]): continue
+                    or emotion_cla.separate.is_stop_word(i[0]):
+            continue
+
+        start = i[0].find('follow">') + 8
+        f.write(i[0][start: -4] + ',' + str(i[1]) +'\n')
         # f.write(i[0] + '\t' + str(i[1]) +'\n')
-        f.write(i[0] + '\n')
+        # f.write(i[0] + '\n')
     f.close()
 
 
@@ -147,12 +153,24 @@ def features_count_words_voc(in_name, out_name, voc='data/keyword.txt'):
     dic = sorted(dic.items(), key=lambda d: d[1], reverse=True)
     # print(dic)
     for i in dic:
-        if i[1] > 1000 or i[1] < 10 \
-                or len(i[0]) == 1 \
-                    or emotion_cla.separate.is_stop_word(i[0]): continue
+
+        # 限制条件
+        # if i[1] > 1000 or i[1] < 10 \
+        #         or len(i[0]) == 1 \
+        #             or emotion_cla.separate.is_stop_word(i[0]):
+        #     continue
+
         # f.write(i[0] + '\t' + str(i[1]) +'\n')
         f.write(i[0] + '\n')
     f.close()
+
+
+def appear_one_word_voc(in_str, voc):
+    # 出现一个word就over!
+    for word in voc:
+        if word in in_str:
+            return True
+    return False
 
 
 def appear_words_voc(in_str, voc):
@@ -199,8 +217,8 @@ def vectorizer(in_name, out_name):
     word = vector.get_feature_names()
 
     # 打印词表
-    out_file = open('data/feature_word.txt', 'a', encoding='utf8')
-    for i in range(len(word)):
+    out_file = open(out_name, 'a', encoding='utf8')
+    for i in list(range(len(word))):
         out_file.write(str(word[i]) + '\n')
     out_file.close()
     # print(re.toarray().sum())
@@ -252,14 +270,25 @@ if __name__ == '__main__':
     # dir_name = "/Users/Kay/Project/EXP/character_analysis/data/users_20160302"
     out_dir= '../extract_weibo_users/seg_0320'
 
-    for in_name in os.listdir(dir_name):
-        if len(in_name) != 10: # 长度为10是有效的uid
-            continue
-        elif how_many_weibo(dir_name + "/" + in_name) < 100: # 爬取到的微博数小于100
-            continue
-        out_file = open(out_dir + "/" + in_name, 'w', encoding='utf8')
-        print(in_name)
-        for line in open(dir_name + "/" + in_name, encoding='utf8'):
-            # print(line)
-            seg = seg_word(filter(json.loads(line.strip())["text"]))
-            out_file.write(seg + '\n')
+    # 分词
+    # for in_name in os.listdir(dir_name):
+    #     if len(in_name) != 10: # 长度为10是有效的uid
+    #         continue
+    #     elif how_many_weibo(dir_name + "/" + in_name) < 100: # 爬取到的微博数小于100
+    #         continue
+    #     out_file = open(out_dir + "/" + in_name, 'w', encoding='utf8')
+    #     print(in_name)
+    #     for line in open(dir_name + "/" + in_name, encoding='utf8'):
+    #         # print(line)
+    #         seg = seg_word(filter(json.loads(line.strip())["text"]))
+    #         out_file.write(seg + '\n')
+
+    # 统计词频
+
+    # 统计来源, 已经分词
+    # in_name = "data/split_class/large_510_source_-1.txt"
+    # out_name = 'source_ext_-1.txt'
+    # features_count_words(in_name, out_name)
+    # in_name = "data/split_class/large_510_source_+1.txt"
+    # out_name = 'source_ext_+1.txt'
+    # features_count_words(in_name, out_name)

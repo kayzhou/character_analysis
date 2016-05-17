@@ -3,6 +3,7 @@ __author__ = 'Kay'
 
 
 from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.datasets import load_svmlight_file
 from sklearn.cross_validation import cross_val_score
 from sklearn.externals import joblib
@@ -15,6 +16,7 @@ def ca_bayes(in_name, out_model_name):
     X = X.todense()
     # print(X, y)
     clf = GaussianNB()
+    clf = MultinomialNB()
     clf.fit(X, y)
     cvs = 0
     for i in range(10):
@@ -47,8 +49,10 @@ if __name__ == '__main__':
     # ca_bayes('data/SVM/315_features_3.txt', 'model/bayes_311_3.mod')
     # ca_bayes('data/SVM/315_features_4.txt', 'model/bayes_311_4.mod')
 
-    ca_bayes('data/SVM/315_features_0_sides.txt', 'model/bayes_311_0.mod')
-    ca_bayes('data/SVM/315_features_1_sides.txt', 'model/bayes_311_1.mod')
-    ca_bayes('data/SVM/315_features_2_sides.txt', 'model/bayes_311_2.mod')
-    ca_bayes('data/SVM/315_features_3_sides.txt', 'model/bayes_311_3.mod')
-    ca_bayes('data/SVM/315_features_4_sides.txt', 'model/bayes_311_4.mod')
+    # ca_bayes('data/SVM/315_features_0_sides.txt', 'model/bayes_311_0.mod')
+    # ca_bayes('data/SVM/315_features_1_sides.txt', 'model/bayes_311_1.mod')
+    # ca_bayes('data/SVM/315_features_2_sides.txt', 'model/bayes_311_2.mod')
+    # ca_bayes('data/SVM/315_features_3_sides.txt', 'model/bayes_311_3.mod')
+    # ca_bayes('data/SVM/315_features_4_sides.txt', 'model/bayes_311_4.mod')
+
+    ca_bayes('data/SVM/404_NOR_features_1.txt', 'model/rf_311_1.mod')

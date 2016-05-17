@@ -45,15 +45,16 @@ def ca_rf(in_name, out_model_name):
 
 if __name__ == '__main__':
 
+    ca_tree('data/SVM/328_IGNORE_features_1.txt', 'model/rf_311_1.mod')
     # ca_rf('data/SVM/328_IGNORE_features_sides_0.txt', 'model/rf_311_0.mod')
     # ca_rf('data/SVM/328_IGNORE_features_sides_1.txt', 'model/rf_311_1.mod')
     # ca_rf('data/SVM/328_IGNORE_features_sides_2.txt', 'model/rf_311_2.mod')
     # ca_rf('data/SVM/328_IGNORE_features_sides_3.txt', 'model/rf_311_3.mod')
     # ca_rf('data/SVM/328_IGNORE_features_sides_4.txt', 'model/rf_311_4.mod')
 
-    ca_rf('data/SVM/328_IGNORE_features_0.txt', 'model/rf_311_0.mod')
+    # ca_rf('data/SVM/328_IGNORE_features_0.txt', 'model/rf_311_0.mod')
     ca_rf('data/SVM/328_IGNORE_features_1.txt', 'model/rf_311_1.mod')
-    ca_rf('data/SVM/328_IGNORE_features_2.txt', 'model/rf_311_2.mod')
-    ca_rf('data/SVM/328_IGNORE_features_3.txt', 'model/rf_311_3.mod')
-    ca_rf('data/SVM/328_IGNORE_features_4.txt', 'model/rf_311_4.mod')
+    # ca_rf('data/SVM/328_IGNORE_features_2.txt', 'model/rf_311_2.mod')
+    # ca_rf('data/SVM/328_IGNORE_features_3.txt', 'model/rf_311_3.mod')
+    # ca_rf('data/SVM/328_IGNORE_features_4.txt', 'model/rf_311_4.mod')
 

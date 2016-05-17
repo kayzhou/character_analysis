@@ -4,6 +4,9 @@ __author__ = 'Kay'
 import numpy as np
 import pandas as pd
 
+'''
+对feature.py 产生的结果进行初步分析
+'''
 
 def split_2class(feature_in_name, out_name_n1, out_name_1, tag_name):
     '''
@@ -15,13 +18,13 @@ def split_2class(feature_in_name, out_name_n1, out_name_1, tag_name):
     :return:
     '''
     dict_tags = {}
-    for line in open(tag_name):
+    for line in open(tag_name, encoding='utf8'):
         t = line.strip().split(" ")
         dict_tags[t[0]] = t[1]
 
-    out_file_n1 = open(out_name_n1, 'w')
-    out_file_1 = open(out_name_1, 'w')
-    for line in open(feature_in_name).readlines():
+    out_file_n1 = open(out_name_n1, 'w', encoding='utf8')
+    out_file_1 = open(out_name_1, 'w', encoding='utf8')
+    for line in open(feature_in_name, encoding='utf8').readlines():
         uid = line[:10]
         try:
             tag = dict_tags[uid]
@@ -47,23 +50,51 @@ def mean_var(in_name):
         print('-----------------------')
 
 
+def keyword_difference_set(in_name1, in_name2, out_name1, out_name2):
+    '''
+    计算关键词差集
+    :param in_name1:
+    :param in_name2:
+    :return:
+    '''
+    def read_set(in_name):
+        s = set()
+        for line in open(in_name, encoding='utf8').readlines():
+            s.add(line.split('\t')[0])
+        return s
+
+
+    def print_set(out_set, in_name, out_name):
+        for line in open(in_name, encoding='utf8').readlines():
+            if line.split('\t')[0] in out_set:
+                open(out_name, 'a', encoding='utf8').write(line)
+
+
+    s1 = read_set(in_name1)
+    s2 = read_set(in_name2)
+    out_set_1 = s1 - s2
+    out_set_2 = s2 - s1
+    print(len(out_set_1))
+    print(len(out_set_2))
+    print_set(out_set_1, in_name1, out_name1)
+    print_set(out_set_2, in_name2, out_name2)
+
+
+def Proportion(in_name, out_name):
+    # data = pd.read_csv(in_name, header=None)
+    data = pd.read_csv(in_name, header=None, sep='\t')
+    s = sum(data[1])
+    out = pd.DataFrame({'source': pd.Series(data[0]), 'count': pd.Series(data[1]), 'pro': pd.Series(data[1] / s)})
+    out.to_csv(out_name, encoding='utf8')
+
+
 if __name__ == '__main__':
 
-    # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_0_n1.txt',
-    #              'data/split_class/large_IGNORE_331_0_1.txt', 'data/tags/328_IGNORE_sides_0.txt')
-    # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_1_n1.txt',
-    #              'data/split_class/large_IGNORE_331_1_1.txt', 'data/tags/large_tag_311_1.txt')
-    # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_2_n1.txt',
-    #              'data/split_class/large_IGNORE_331_2_1.txt', 'data/tags/328_IGNORE_sides_2.txt')
-    # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_3_n1.txt',
-    #              'data/split_class/large_IGNORE_331_3_1.txt', 'data/tags/328_IGNORE_sides_3.txt')
-    # split_2class('data/large_IGNORE_331.txt', 'data/split_class/large_IGNORE_331_4_n1.txt',
-    #              'data/split_class/large_IGNORE_331_4_1.txt', 'data/tags/large_tag_311_4.txt')
-
-    split_2class('data/features/large_401_badge.txt', 'data/split_class/large_IGNORE_404_badge_-1.txt',
-                 'data/split_class/large_IGNORE_404_badge_+1.txt', 'data/tags/large_404_IGNORE_1_NOR.txt')
-    # split_2class('data/features_328_shopping.txt', 'data/split_class/large_IGNORE_331_4_shopping_n1.txt',
-    #              'data/split_class/large_IGNORE_331_4_shopping_1.txt', 'data/tags/328_IGNORE_sides_4.txt')
+    # 按性格分为两类, 打印到文件
+    split_2class('data/features/large_510_interval.txt',
+                 'data/split_class/large_510_interval_-1.txt',
+                 'data/split_class/large_510_interval_+1.txt',
+                 'data/tags/large_404_IGNORE_1_NOR.txt')
 
 
     # mean_var('data/split_class/large_IGNORE_331_4_n1.txt')
@@ -72,6 +103,18 @@ if __name__ == '__main__':
     # mean_var('data/split_class/large_IGNORE_331_4_shopping_n1.txt')
     # mean_var('data/split_class/large_IGNORE_331_4_shopping_1.txt')
 
+    # keyword_difference_set('/Users/Kay/Project/EXP/character_analysis/keywords_ext_+1.txt',
+    #                        '/Users/Kay/Project/EXP/character_analysis/keywords_ext_-1.txt',
+    #                        '/Users/Kay/Project/EXP/character_analysis/keywords_ext_+1_diff.txt',
+    #                        '/Users/Kay/Project/EXP/character_analysis/keywords_ext_-1_diff.txt')
+
+    # 计算比例
+    # Proportion('source_ext_-1.txt', 'source_pro_ext_-1.csv')
+    # Proportion('source_ext_+1.txt', 'source_pro_ext_+1.csv')
+    # Proportion('keywords_ext_-1.txt', 'keywords_pro_ext_-1.csv')
+    # Proportion('keywords_ext_+1.txt', 'keywords_pro_ext_+1.csv')
+
+    pass
 
 
 

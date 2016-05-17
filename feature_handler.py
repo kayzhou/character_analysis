@@ -455,7 +455,7 @@ def str2datetime(s):
         return datetime.datetime.strptime(s[:-11] + s[-5:], '%c')
 
 
-def exact_tweet_datetime(in_name, action='tweet'):
+def exact_tweet_datetime(in_name, action='tweet', output_type='dt'):
     '''
     提取微博发布日期
     :param in_name:
@@ -464,7 +464,10 @@ def exact_tweet_datetime(in_name, action='tweet'):
     '''
     user_data = load_user_data(in_name)
     if action == 'tweet':
-        return [str2datetime(user['created_at']) for user in user_data]
+        if output_type == 'dt':
+            return [str2datetime(user['created_at']) for user in user_data]
+        elif output_type == 'str':
+            return [str2datetime(user['created_at']).strftime('%Y-%m-%d,%H:%M:%S') for user in user_data]
     elif action == 'retweet':
         return [str2datetime(user['created_at']) for user in user_data if "retweeted_status" in user]
     elif action == "at":
@@ -477,17 +480,17 @@ def extract_mood(in_name):
     mood = [0] * 6
     for data in user_data:
         tag = data['mood']
-        if tag == '0':
+        if tag == 0:
             mood[0] += 1
-        elif tag == '1':
+        elif tag == 1:
             mood[1] += 1
-        elif tag == '2':
+        elif tag == 2:
             mood[2] += 1
-        elif tag == '3':
+        elif tag == 3:
             mood[3] += 1
-        elif tag == '4':
+        elif tag == 4:
             mood[4] += 1
-        elif tag == '-1':
+        elif tag == -1:
             mood[5] += 1
     return mood
 
