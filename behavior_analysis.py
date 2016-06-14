@@ -91,10 +91,20 @@ def Proportion(in_name, out_name):
 if __name__ == '__main__':
 
     # 按性格分为两类, 打印到文件
-    split_2class('data/features/large_510_interval.txt',
-                 'data/split_class/large_510_interval_-1.txt',
-                 'data/split_class/large_510_interval_+1.txt',
+    split_2class('data/features/large_510_24_work.txt',
+                 'data/features/large_510_24_work_-1.txt',
+                 'data/features/large_510_24_work_+1.txt',
                  'data/tags/large_404_IGNORE_1_NOR.txt')
+
+    split_2class('data/features/large_510_24_rest.txt',
+                 'data/features/large_510_24_rest_-1.txt',
+                 'data/features/large_510_24_rest_+1.txt',
+                 'data/tags/large_404_IGNORE_1_NOR.txt')
+
+    # split_2class('data/features/large_517_geo.txt',
+    #              'data/split_class/large_517_geo_-1.txt',
+    #              'data/split_class/large_517_geo_+1.txt',
+    #              'data/tags/large_404_IGNORE_1_NOR.txt')
 
 
     # mean_var('data/split_class/large_IGNORE_331_4_n1.txt')

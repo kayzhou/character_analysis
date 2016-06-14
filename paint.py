@@ -5,6 +5,9 @@ import matplotlib.pylab as plt
 import matplotlib.mlab as mlab
 import pandas as pd
 import numpy as np
+import seaborn as sns
+sns.set(style='ticks', palette='Set2')
+
 
 def hist_extraversion():
     '''
@@ -17,17 +20,21 @@ def hist_extraversion():
     mu = ext.mean()
     sigma = ext.std()
     print(mu, sigma)
+    plt.figure(figsize=(10, 8))
     # plt.title("The distribution of score on extraversion")
     plt.xlabel("Score on extraversion", fontsize=20)
     plt.ylabel("Probability", fontsize=20)
-    n, bins, patches = plt.hist(ext, n_bins, color='g', normed=1, alpha=0.6)
+    plt.grid(True)
+    n, bins, patches = plt.hist(ext, n_bins, color='g', normed=1, alpha=0.8)
     x = np.linspace(0, 60, 100)
     y = mlab.normpdf(x, mu, sigma)
     plt.xlim(0, 60)
-    # plt.ylim(0, 1)
+    plt.ylim(0, 0.055)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.plot(x, y, 'r--')
+    # plt.tight_layout()
+    plt.savefig('figure/ext_dist.pdf', dpi=300, facecolor='white')
     plt.show()
 
 
@@ -153,10 +160,11 @@ def shopping_cumulative_hist():
     col2 = data2[2] / data2[1]
     col1 = col1[col1<=0.16]
     col2 = col2[col2<=0.16]
-    print(len(col1))
-    print(len(col2))
-    plt.hist(col1, n_bins, normed=1, alpha=0.8, color='r', linewidth=3., histtype='step', cumulative=True)
-    plt.hist(col2, n_bins, normed=1, alpha=0.8, color='b', linewidth=3., histtype='step', cumulative=True)
+    # print(len(col1))
+    # print(len(col2))
+    plt.figure(figsize=(10, 8))
+    plt.hist(col1.dropna(), n_bins, normed=1, alpha=0.9, color=(1, 0.4, 0.2), linewidth=3.0, histtype='step', cumulative=True)
+    plt.hist(col2.dropna(), n_bins, normed=1, alpha=0.9, color=(0.2, 0.0, 0.9), linewidth=3.0, histtype='step', cumulative=True)
     plt.grid(True)
     plt.xlim(0, 0.15)
     plt.ylim(0, 1)
@@ -165,7 +173,7 @@ def shopping_cumulative_hist():
     plt.xlabel("Purchasing Index", fontsize=24)
     plt.ylabel("Cumulative probability", fontsize=24)
     plt.legend(['Extroverts', 'Introverts'], loc=4, fontsize=20)
-
+    plt.savefig('figure/purchase_pro.eps', dpi=300, facecolor='white')
     # plt.hist(data1[1], n_bins, normed=1, alpha=0.6, color='b', cumulative=True)
     # plt.hist(data2[1], alpha=0.6, color='r')
     plt.show()
@@ -189,27 +197,32 @@ def mood_cumulative_hist(index):
     col2 = data2[index] / mood_sum2
 
 
-    q1 = pd.qcut(col1, np.linspace(0, 1, 11), retbins=True)
-    q2 = pd.qcut(col2, np.linspace(0, 1, 11), retbins=True)
-    print('----------------------------------------------')
-    print(q1)
-    print(col1.describe())
-    print(q2)
-    print(col2.describe())
-    plt.figure(figsize=(7.2, 6))
-    plt.hist(col1.dropna(), n_bins, normed=1, alpha=0.7, color='r', linewidth=3.0, histtype='step', cumulative=True)
-    plt.hist(col2.dropna(), n_bins, normed=1, alpha=0.7, color='b', linewidth=3.0, histtype='step', cumulative=True)
+    # q1 = pd.qcut(col1, np.linspace(0, 1, 11), retbins=True)
+    # q2 = pd.qcut(col2, np.linspace(0, 1, 11), retbins=True)
+    # print('----------------------------------------------')
+    # print(q1)
+    # print(col1.describe())
+    # print(q2)
+    # print(col2.describe())
+    plt.figure(figsize=(8, 6))
+    # plt.hist(col1.dropna(), n_bins, normed=1, alpha=0.9, color=(1, 0.4, 0.2), linewidth=3.0, histtype='step', cumulative=True)
+    # plt.hist(col2.dropna(), n_bins, normed=1, alpha=0.9, color=(0.2, 0.0, 0.9), linewidth=3.0, histtype='step', cumulative=True)
+    plt.hist(col1.dropna(), n_bins, normed=1, alpha=0.9, color=(1, 0.4, 0.2), linewidth=3.0, cumulative=True)
+    plt.hist(col2.dropna(), n_bins, normed=1, alpha=0.9, color=(0.2, 0.0, 0.9), linewidth=3.0, cumulative=True)
     plt.grid(True)
-    plt.legend(['Extroverts', 'Introverts'], loc=4, fontsize=20)
-    plt.xlim(0, 0.3)
+    if index == 2:
+        plt.legend(['Extroverts', 'Introverts'], loc=4, fontsize=20)
+    list_xlim = [0.5, 0.3, 0.8, 0.5, 0.3]
+    plt.xlim(0, list_xlim[index - 1])
     plt.ylim(0, 1)
     plt.xticks(fontsize=20)
     plt.yticks(np.linspace(0, 1, 11), fontsize=20)
 
     # plt.xlabel("Fear index", fontsize=25)
     plt.ylabel("Cumulative probability", fontsize=25)
-    # plt.show()
-    # plt.savefig('figure/mood_disgust.eps')
+    list_mood = ['anger', 'disgust', 'joy', 'sadness', 'fear']
+    # plt.savefig('figure/mood_%s.eps' % list_mood[index - 1], dpi=300, facecolor='white')
+    plt.show()
 
 
 def negative_mood_cumulative_hist():
@@ -251,22 +264,24 @@ def negative_mood_cumulative_hist():
 
 
 def ca_box_plot_shopping():
+    # 读取数据
     data1 = pd.read_csv('data/split_class/large_IGNORE_425_shopping_+1.txt', sep=' ', header=None)
     data2 = pd.read_csv('data/split_class/large_IGNORE_425_shopping_-1.txt', sep=' ', header=None)
-
     col1 = data1[2] / data1[1]
     col2 = data2[2] / data2[1]
-
-    print(col1.describe())
-    print(col2.describe())
-    col1.to_csv("shopping_+1.txt")
-    col2.to_csv("shopping_-1.txt")
-
-    plt.xlabel("Purchasing Index", fontsize=25)
-    plt.xticks(fontsize=20)
-    plt.yticks(fontsize=20)
+    # print(col1.describe())
+    # print(col2.describe())
+    # col1.to_csv("shopping_+1.txt")
+    # col2.to_csv("shopping_-1.txt")
+    plt.figure(figsize=(7, 4.5))
     plt.boxplot([col1, col2], vert=False, sym='k+', showmeans=True, showfliers=True, notch=1)
-    # labels=['extravert', 'introvert'])
+    plt.yticks((1, 2), ('Extroverts', 'Introverts'), fontsize=25, rotation=30)
+    plt.ylim(0.5, 2.5)
+
+    plt.xticks(fontsize=30)
+    plt.xlabel("Purchasing Index", fontsize=30)
+    plt.xlim(0, 0.12)
+    plt.savefig('figure/purchase_box.eps', dpi=300, facecolor='white')
     plt.show()
 
 
@@ -317,7 +332,7 @@ if __name__ == '__main__':
     # 购物
     # shopping_cumulative_hist()
     # shopping_hist()
-    # ca_box_plot_shopping()
+    ca_box_plot_shopping()
 
     # 训练特征
     # ca_hist_features(35)
@@ -328,11 +343,11 @@ if __name__ == '__main__':
     # badge_bar(5)
 
     # 情绪累积分布
-    mood_cumulative_hist(1)
-    mood_cumulative_hist(2)
-    mood_cumulative_hist(3)
-    mood_cumulative_hist(4)
-    mood_cumulative_hist(5)
+    # mood_cumulative_hist(1)
+    # mood_cumulative_hist(2)
+    # mood_cumulative_hist(3)
+    # mood_cumulative_hist(4)
+    # mood_cumulative_hist(5)
 
     # negative_mood_cumulative_hist()
 

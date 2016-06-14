@@ -116,7 +116,7 @@ def get_geo_features(in_name):
     for line in open(in_name, encoding='utf8').readlines():
         line = json.loads(line)
         if line['geo']:
-            geo.append(line['geo'])
+            geo.append(str(line['geo']['coordinates'][0]) + ',' + str(line['geo']['coordinates'][1]))
 
     return geo
 
@@ -197,20 +197,20 @@ if __name__ == '__main__':
 
     # 提取关键词, 地理位置, url, 来源
     # out_keyword = open('large_510_keyword.txt', 'w', encoding='utf8')
-    # out_geo = open('large_510_geo.txt', 'w', encoding='utf8')
+    out_geo = open('large_517_geo.txt', 'w', encoding='utf8')
     # out_url = open('large_510_url.txt', 'w', encoding='utf8')
     # out_source = open('large_510_source.txt', 'w', encoding='utf8')
-    # for in_name in os.listdir(dir_name):
-    #     if len(in_name) != 10: # 长度为10是有效的uid
-    #         continue
-    #     elif how_many_weibo(dir_name + "/" + in_name) < 1: # 爬取到的微博数小于100
-    #         continue
-    #     print(in_name)
+    for in_name in os.listdir(dir_name):
+        if len(in_name) != 10: # 长度为10是有效的uid
+            continue
+        elif how_many_weibo(dir_name + "/" + in_name) < 1: # 爬取到的微博数小于100
+            continue
+        print(in_name)
     #     X = get_keyword_features(dir_name + "/" + in_name)
     #     print(X)
     #     out_keyword.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
-    #     X = get_geo_features(dir_name + "/" + in_name)
-    #     print(X)
+        X = get_geo_features(dir_name + "/" + in_name)
+        print(X)
     #     out_geo.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
     #     X = get_url_features(dir_name + "/" + in_name)
     #     print(X)
@@ -220,14 +220,14 @@ if __name__ == '__main__':
     #     out_source.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
 
 
-    # 时间特征
-    out_time = open('large_510_time.txt', 'w', encoding='utf8')
-    for in_name in os.listdir(dir_name):
-        if len(in_name) != 10: # 长度为10是有效的uid
-            continue
-        elif how_many_weibo(dir_name + "/" + in_name) < 1: # 爬取到的微博数小于100
-            continue
-        print(in_name)
-        X = exact_tweet_datetime(dir_name + "/" + in_name, output_type='str')
-        print(X)
-        out_time.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")
+    # # 时间特征
+    # out_time = open('large_510_time.txt', 'w', encoding='utf8')
+    # for in_name in os.listdir(dir_name):
+    #     if len(in_name) != 10: # 长度为10是有效的uid
+    #         continue
+    #     elif how_many_weibo(dir_name + "/" + in_name) < 1: # 爬取到的微博数小于100
+    #         continue
+    #     print(in_name)
+    #     X = exact_tweet_datetime(dir_name + "/" + in_name, output_type='str')
+    #     print(X)
+    #     out_time.write(in_name + " " + " ".join([str(x) for x in X]) + "\n")

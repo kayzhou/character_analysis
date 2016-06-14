@@ -6,3 +6,6 @@ figure/
 test.py
 *.txt
 *.pyc
+POI_data/
+__pycache__/
+emotion_cla/__pycache__/
