@@ -6,7 +6,7 @@ import matplotlib.mlab as mlab
 import pandas as pd
 import numpy as np
 import seaborn as sns
-sns.set(style='ticks', palette='Set2')
+# sns.set(style='ticks', palette='Set2')
 
 
 def hist_extraversion():
@@ -20,12 +20,14 @@ def hist_extraversion():
     mu = ext.mean()
     sigma = ext.std()
     print(mu, sigma)
-    plt.figure(figsize=(10, 8))
+    fig = plt.figure(figsize=(10, 8))
+    # --- for *.eps --- #
+    fig.set_rasterized(True)
     # plt.title("The distribution of score on extraversion")
     plt.xlabel("Score on extraversion", fontsize=20)
     plt.ylabel("Probability", fontsize=20)
     plt.grid(True)
-    n, bins, patches = plt.hist(ext, n_bins, color='g', normed=1, alpha=0.8)
+    n, bins, patches = plt.hist(ext, n_bins, normed=1, alpha=0.8)
     x = np.linspace(0, 60, 100)
     y = mlab.normpdf(x, mu, sigma)
     plt.xlim(0, 60)
@@ -33,8 +35,8 @@ def hist_extraversion():
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.plot(x, y, 'r--')
-    # plt.tight_layout()
-    plt.savefig('figure/ext_dist.pdf', dpi=300, facecolor='white')
+    plt.tight_layout()
+    plt.savefig('figure/ext_dist.pdf', dpi=300)
     plt.show()
 
 
@@ -273,15 +275,25 @@ def ca_box_plot_shopping():
     # print(col2.describe())
     # col1.to_csv("shopping_+1.txt")
     # col2.to_csv("shopping_-1.txt")
-    plt.figure(figsize=(7, 4.5))
-    plt.boxplot([col1, col2], vert=False, sym='k+', showmeans=True, showfliers=True, notch=1)
-    plt.yticks((1, 2), ('Extroverts', 'Introverts'), fontsize=25, rotation=30)
-    plt.ylim(0.5, 2.5)
+    plt.figure(figsize=(8, 4))
+    sns.boxplot(data=[col1, col2], fliersize=0.1, width=0.3)
+    # sns.violinplot(data=[col1, col2], fliersize=0.1, width=0.3)
 
-    plt.xticks(fontsize=30)
-    plt.xlabel("Purchasing Index", fontsize=30)
-    plt.xlim(0, 0.12)
-    plt.savefig('figure/purchase_box.eps', dpi=300, facecolor='white')
+    plt.xticks((0, 1), ('Extroverts', 'Introverts'), fontsize=20)
+    # plt.xlim(0.5, 2.5)
+
+    plt.yticks(fontsize=20)
+    plt.ylabel("Purchasing Index", fontsize=20)
+    plt.ylim(0, 0.12)
+
+    # plt.boxplot(data=[col1, col2], vert=False, sym='k+', showmeans=True, showfliers=True, notch=1)
+    # plt.yticks((1, 2), ('Extroverts', 'Introverts'), fontsize=25, rotation=30)
+    # plt.ylim(0.5, 2.5)
+    #
+    # plt.xticks(fontsize=30)
+    # plt.xlabel("Purchasing Index", fontsize=30)
+    # plt.xlim(0, 0.12)
+    plt.savefig('figure/purchase_box.eps', dpi=300)
     plt.show()
 
 

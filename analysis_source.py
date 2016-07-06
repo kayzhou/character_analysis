@@ -154,7 +154,7 @@ def get_brand_count(in_name):
 
 def get_source_count(in_name):
     source = {
-        "浏览器": ["浏览器", "weibo.com"],
+        # "浏览器": ["浏览器", "weibo.com"],
         "自拍": ["美图", "美拍"],
         "新闻": ["新闻", "今日头条"],
         "视频": ["秒拍", "哔哩哔哩", "优酷土豆", "爱奇艺"],
@@ -165,7 +165,7 @@ def get_source_count(in_name):
     }
 
     source_pro = {
-        "浏览器": 0,
+        # "浏览器": 0,
         "自拍": 0,
         "新闻": 0,
         "视频": 0,
@@ -177,23 +177,30 @@ def get_source_count(in_name):
 
     data = pd.read_csv(in_name)
 
+
     # 遍历所有来源
     for i in np.arange(data.shape[0]):
         item = data.ix[i, :]
-        # 遍历所有品牌
+        # 遍历所有来源类别
         for sou in source.items():
-            # 遍历所有型号
+            # 遍历所有具体来源
             for typ in sou[1]:
                 if typ in item.source.lower():
-                    source_pro[sou[0]] += item['pro']
+                    source_pro[sou[0]] += item['count']
                     break
 
     print('----------')
 
 
+    # 计算总量
+    s = 0
+    for c in source_pro.items():
+        s += c[1]
+
     # 打印输出
     for sp in source_pro.items():
-        print(sp[0] + ',' + "%.4f" % (sp[1] * 100) +"%")
+        # print(sp[0] + ',' + "%.4f" % (sp[1] * 100) +"%")
+        print(sp[0] + ',' + "%.2f" % (sp[1] / s * 100) +"%")
 
     # out.to_csv(out_name, encoding='utf8')
 
