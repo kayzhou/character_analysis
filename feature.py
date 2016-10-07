@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Kay'
 
+'''
+抽取用户特征, 调用feature_handler.py内函数
+'''
+
+
 from feature_handler import *
 from sklearn.feature_extraction.text import CountVectorizer
 import json
@@ -26,6 +31,7 @@ def get_text_features(all_text):
     try:
         re = vector.fit_transform(all_text).toarray()
     except:
+        print('except!')
         print(all_text)
     x = [str(r) for r in re[0]]
     return x
@@ -38,6 +44,9 @@ def get_train_features(in_name):
     # --- !!! order 很重要, 必填 !!! ---
     # 你问我为什么??!
     # 因为我要取到最近的一条微博啊! 不同的获取方式微博排序顺序不同, 第一个? 还是最后一个? 是最新的, I don't KNOW!
+    # order 为True则微博是按时间正序排列
+    # 为什么会出现这样的问题?
+    # 直接用api去获取是倒序的, 从Hbase取出来是正序的;
     # ! 前方高能预警 !
 
     last_w = last_weibo(in_name, order=False)

@@ -12,7 +12,9 @@ import re
 import pandas as pd
 
 
-# 提取微博用户特征, 用于用户性格分析
+'''
+提取微博用户特征, 用于用户性格分析
+'''
 
 def duplicate_removal(in_name='data/train_data.txt'):
     user_id = set()
