@@ -124,8 +124,6 @@ if __name__ == '__main__':
     # Proportion('keywords_ext_-1.txt', 'keywords_pro_ext_-1.csv')
     # Proportion('keywords_ext_+1.txt', 'keywords_pro_ext_+1.csv')
 
-    pass
-
 
 
 
