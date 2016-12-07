@@ -6,7 +6,7 @@ import matplotlib.mlab as mlab
 import pandas as pd
 import numpy as np
 import seaborn as sns
-# sns.set(style='ticks', palette='Set2')
+sns.set(style='ticks', palette='muted')
 
 
 def hist_extraversion():
@@ -24,10 +24,10 @@ def hist_extraversion():
     # --- for *.eps --- #
     fig.set_rasterized(True)
     # plt.title("The distribution of score on extraversion")
-    plt.xlabel("Score on extraversion", fontsize=20)
-    plt.ylabel("Probability", fontsize=20)
+    plt.xlabel("$Score\ on\ extraversion$", fontsize=20)
+    plt.ylabel("$Probability$", fontsize=20)
     plt.grid(True)
-    n, bins, patches = plt.hist(ext, n_bins, normed=1, alpha=0.8)
+    plt.hist(ext, n_bins, normed=1, alpha=0.8, rwidth=0.85)
     x = np.linspace(0, 60, 100)
     y = mlab.normpdf(x, mu, sigma)
     plt.xlim(0, 60)
@@ -35,8 +35,8 @@ def hist_extraversion():
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.plot(x, y, 'r--')
-    plt.tight_layout()
-    plt.savefig('figure/ext_dist.pdf', dpi=300)
+    # plt.tight_layout()
+    plt.savefig('figure/ext_dist.eps', dpi=300)
     plt.show()
 
 
@@ -339,12 +339,12 @@ def ca_hist_features(index):
 if __name__ == '__main__':
 
     # 心理测试数据的分布
-    # hist_extraversion()
+    hist_extraversion()
 
     # 购物
     # shopping_cumulative_hist()
     # shopping_hist()
-    ca_box_plot_shopping()
+    # ca_box_plot_shopping()
 
     # 训练特征
     # ca_hist_features(35)
