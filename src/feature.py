@@ -5,11 +5,12 @@ __author__ = 'Kay'
 抽取用户特征, 调用feature_handler.py内函数
 '''
 
+import json
 
 from feature_handler import *
 from sklearn.feature_extraction.text import CountVectorizer
-import json
-from NLP_tool import appear_one_word_voc, appear_words_voc
+
+from src.NLP_tool import appear_one_word_voc, appear_words_voc
 
 
 def str2datetime(s):

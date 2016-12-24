@@ -17,12 +17,10 @@ for line in open('data/asd.txt'):
     print(line.strip().split(',')[1] + " -1.0")
 
 for line in open('/Users/Kay/Project/EXP/character_analysis/data/tags/large_tag_311_1.txt'):
-    if line.strip().split(' ')[1]  == "1.0":
+    if line.strip().split(' ')[1] == "1.0":
         cnt += 1
         uid.add(line.strip().split(' ')[0])
         print(line.strip())
 
 # print(len(uid) == cnt)
 # print(len(uid), cnt)
-
-

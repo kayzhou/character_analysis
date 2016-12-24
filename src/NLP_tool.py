@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Kay'
 
+import codecs
+import os
+
 import jieba
 import jieba.posseg as pseg
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+
 import emotion_cla.filer
 import emotion_cla.separate
-import codecs
-from sklearn import feature_extraction
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.feature_extraction.text import CountVectorizer
-import os
-import numpy as np
-from feature_handler import how_many_weibo
-import json
 
 jieba.load_userdict('NLP_data/user_dict.txt')
 stop_word_set = set([word.strip() for word in codecs.open('NLP_data/stop_word.txt').readlines()])
