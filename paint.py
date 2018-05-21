@@ -181,6 +181,52 @@ def shopping_cumulative_hist():
     plt.show()
 
 
+def driving_cumulative_hist():
+    '''
+    驾驶累积分布
+    :return:
+    '''
+    n_bins = 5000
+    data = pd.read_csv('data/drive_index.txt', header=None)
+    data1 = data[data[1] == 1]
+    data2 = data[data[1] == 0]
+
+
+    # shopping1 = data1[2]
+    # shopping2 = data2[2]
+    # for i in np.arange(3, 17):
+    #     shopping1 += data1[i]
+    #     shopping2 += data2[i]
+    #
+    # col1 = shopping1 / data1[1]
+    # col2 = shopping2 / data2[1]
+
+    col1 = data1[9]
+    col2 = data2[9]
+    print(col1.describe())
+    print(col2.describe())
+
+    col1 = col1[col1 <= 0.2]
+    col2 = col2[col2 <= 0.2]
+    # print(len(col1))
+    # print(len(col2))
+    # plt.figure(figsize=(5, 4))
+    plt.hist(col1.dropna(), n_bins, normed=1, linewidth=1.5, histtype='step', cumulative=True)
+    plt.hist(col2.dropna(), n_bins, normed=1, linewidth=1.5, histtype='step', cumulative=True)
+    plt.grid(True)
+    plt.xlim(0, 0.02)
+    plt.ylim(0, 1)
+    # plt.xticks(fontsize=20)
+    plt.yticks(np.linspace(0, 1, 11))
+    plt.xlabel("Drive Index")
+    plt.ylabel("Cumulative probability")
+    plt.legend(['Extroverts', 'Introverts'], loc=4)
+    # plt.savefig('figure/purchase_pro.eps', dpi=300, facecolor='white')
+    # plt.hist(data1[1], n_bins, normed=1, alpha=0.6, color='b', cumulative=True)
+    # plt.hist(data2[1], alpha=0.6, color='r')
+    plt.show()
+
+
 def mood_cumulative_hist(index):
     n_bins = 10000
     data1 = pd.read_csv('data/split_class/large_IGNORE_406_mood_+1.txt', sep=' ', header=None)
@@ -297,6 +343,42 @@ def ca_box_plot_shopping():
     plt.show()
 
 
+def ca_box_plot_driving():
+    # 读取数据
+    # n_bins = 5000
+    data = pd.read_csv('data/drive_index.txt', header=None)
+    data1 = data[data[1] == 0]
+    data2 = data[data[1] == 1]
+    col1 = data1[9]
+    col2 = data2[9]
+    col1 = col1[col1 <= 0.2]
+    col2 = col2[col2 <= 0.2]
+    # print(col1.describe())
+    # print(col2.describe())
+    # col1.to_csv("shopping_+1.txt")
+    # col2.to_csv("shopping_-1.txt")
+    plt.figure(figsize=(8, 4))
+    sns.boxplot(data=[col1, col2], width=0.3)
+    # sns.violinplot(data=[col1, col2], fliersize=0.1, width=0.3)
+
+    plt.xticks((0, 1), ('Extroverts', 'Introverts'))
+    # plt.xlim(0.5, 2.5)
+
+    # plt.yticks(fontsize=20)
+    plt.ylabel("Drive Index")
+    plt.ylim(0, 0.015)
+
+    # plt.boxplot(data=[col1, col2], vert=False, sym='k+', showmeans=True, showfliers=True, notch=1)
+    # plt.yticks((1, 2), ('Extroverts', 'Introverts'), fontsize=25, rotation=30)
+    # plt.ylim(0.5, 2.5)
+    #
+    # plt.xticks(fontsize=30)
+    # plt.xlabel("Purchasing Index", fontsize=30)
+    # plt.xlim(0, 0.12)
+    # plt.savefig('figure/purchase_box.eps', dpi=300)
+    plt.show()
+
+
 def ca_box_plot_features(index):
     '''
     训练特征和外倾性的关系
@@ -339,7 +421,7 @@ def ca_hist_features(index):
 if __name__ == '__main__':
 
     # 心理测试数据的分布
-    hist_extraversion()
+    # hist_extraversion()
 
     # 购物
     # shopping_cumulative_hist()
@@ -363,3 +445,5 @@ if __name__ == '__main__':
 
     # negative_mood_cumulative_hist()
 
+    driving_cumulative_hist()
+    # ca_box_plot_driving()
